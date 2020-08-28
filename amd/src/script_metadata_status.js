@@ -11,12 +11,19 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
                             courseId: courseId,
                         },
                         fail: notification.exception
+                    },
+                    {
+                        methodname: 'block_metadata_status_get_debug',
+                        args: {
+                            courseId: courseId,
+                        },
+                        fail: notification.exception
                     }
                 ]);
 
-                $.when(promises[0]).done((moduleStatus) => {
+                $.when(promises[0], promises[1]).done((moduleStatus, debug) => {
                     /* eslint-disable no-console */
-                    console.log(moduleStatus);
+                    console.log(debug);
                     /* eslint-enable no-console */
                     injectHTML(moduleStatus);
                 });
