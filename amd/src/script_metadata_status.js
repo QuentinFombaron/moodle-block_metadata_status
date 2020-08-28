@@ -23,6 +23,9 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
 
                 $.when(promises[0], promises[1]).done((moduleStatus, debug) => {
                     /* eslint-disable no-console */
+                    console.log(moduleStatus);
+                    /* eslint-enable no-console */
+                    /* eslint-disable no-console */
                     console.log(debug);
                     /* eslint-enable no-console */
                     injectHTML(moduleStatus);

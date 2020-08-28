@@ -59,18 +59,22 @@ class block_metadata_status_external extends external_api {
             $params['module'. $moduleId]= $moduleId;
         }
 
-        $moduleMetadata = $DB->get_records_sql($sql, $params);
+        $sets = $DB->get_recordset_sql($sql, $params);
+
+        $moduleMetadata = [];
+        foreach ($sets as $set) {
+            $moduleMetadata[] = ['instanceid' => $set->instanceid, 'fieldid' => $set->fieldid, 'data' => $set->data];
+        }
+
+        $sets->close();
 
         // isset($blockinstance->config->{'moduleselectm' . $row->id})
 
         $metadataStatus = [];
 
         foreach ($modules as $module) {
-            $temp = array_filter($moduleMetadata, function ($item) use ($module) {return $item->instanceid === $module->id && $item->fieldid === 1;});
-            $shared = $temp[0]->data === 1;
-            foreach ($moduleMetadataFieldIds as $moduleMetadataFieldId) {
-            }
-            $metadataStatus[] = ['moduleId' => $module->id, 'status' => ['percentage' => 25, 'shared' => $shared]];
+            $temp = array_filter($moduleMetadata, function($item) use ($module) { return $item['instanceid'] == $module->id && $item['fieldid'] == 1;});
+            $metadataStatus[] = ['moduleId' => $module->id, 'status' => ['percentage' => 25, 'shared' => $temp[0]['data'] == '1']];
         }
 
         return $metadataStatus;
@@ -147,9 +151,18 @@ class block_metadata_status_external extends external_api {
         $sql = 'SELECT instanceid, fieldid, data
             FROM {local_metadata};';
 
-        $result = $DB->get_records_sql($sql);
+        $sets = $DB->get_recordset_sql($sql);
 
-        return $result;
+        $result = [];
+        foreach ($sets as $set) {
+            $result[] = ['instanceid' => $set->instanceid, 'fieldid' => $set->fieldid, 'data' => $set->data];
+        }
+
+        $sets->close();
+
+        $i = array_filter($result, function($item) { return $item['instanceid'] == 2 && $item['fieldid'] == 1;});
+
+        return $i;
     }
 
     /**
@@ -161,9 +174,9 @@ class block_metadata_status_external extends external_api {
         return new external_multiple_structure(
             new external_single_structure(
                 array(
-                    'instanceid' => new external_value(PARAM_INT, 'Module ID', VALUE_DEFAULT, 0),
-                    'fieldid' => new external_value(PARAM_INT, 'Module ID', VALUE_DEFAULT, 0),
-                    'data' => new external_value(PARAM_TEXT, 'Module ID', VALUE_DEFAULT, '0'),
+                    'instanceid' => new external_value(PARAM_INT, 'Module ID'),
+                    'fieldid' => new external_value(PARAM_INT, 'Module ID'),
+                    'data' => new external_value(PARAM_TEXT, 'Module ID'),
                 )
             )
         );
