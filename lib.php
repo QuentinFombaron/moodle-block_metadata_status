@@ -2,6 +2,10 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+/** Administration configuration to enable metadata tracking */
+const DEFAULT_METADATA_STATUS_ENABLE_METADATA_TRACKING = 1;
+const DEFAULT_METADATA_STATUS_SHARED_SHORT_NAME = 'shared';
+
 /**
  * Get module metadata
  *
@@ -9,12 +13,12 @@ defined('MOODLE_INTERNAL') || die;
  *
  * @throws dml_exception
  */
-function block_metadata_status_get_module_metadatas() {
+function block_metadata_status_get_module_metadata_fields() {
     global $DB;
 
-    $sql = 'SELECT id, name, datatype
+    $sql = 'SELECT id, name, shortname, datatype
             FROM {local_metadata_field}
-            WHERE contextlevel = :contextlevel';
+            WHERE contextlevel = :contextlevel AND datatype != "checkbox"';
 
     $params = ['contextlevel' => 70];
 

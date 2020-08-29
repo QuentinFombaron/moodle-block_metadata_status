@@ -26,15 +26,15 @@ class block_metadata_status_edit_form extends block_edit_form {
         $mform->setDefault('config_text', 'default value');
         $mform->setType('config_text', PARAM_RAW);
 
-        $moduleMetadata = block_metadata_status_get_module_metadatas();
+        $moduleMetadataFields = block_metadata_status_get_module_metadata_fields();
 
-        foreach ($moduleMetadata as $metadata) {
+        foreach ($moduleMetadataFields as $metadataField) {
             $metadataOptions = [];
 
             $metadataOptions[] = $mform->createElement(
                 'checkbox',
-                'config_metadata_' . $metadata->id,
-                $metadata->name . '(' . $metadata->datatype . ')'
+                'config_metadata_' . $metadataField->id,
+                $metadataField->name . '(' . $metadataField->datatype . ')'
             );
 
             $mform->addGroup(

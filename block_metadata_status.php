@@ -1,11 +1,25 @@
 <?php
 class block_metadata_status extends block_base {
+
+    /**
+     * @return bool
+     */
+    public function has_config() {
+
+        return true;
+
+    }
+
+    /**
+     * @throws coding_exception
+     */
     public function init() {
         $this->title = get_string('metadata_status', 'block_metadata_status');
     }
-    // The PHP tag and the curly bracket for the class definition
-    // will only be closed after there is another function added in the next section.
 
+    /**
+     * @return string
+     */
     public function get_content() {
         global $USER, $COURSE;
 

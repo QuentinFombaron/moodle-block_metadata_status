@@ -39,14 +39,35 @@ class block_metadata_status_external extends external_api {
 
         $modules = $DB->get_records('course_modules', array('course' => $courseId), null, 'id');
 
-        $sql = 'SELECT id
+        $sql = 'SELECT id, shortname, datatype, defaultdata
             FROM {local_metadata_field}
             WHERE contextlevel = :contextlevel';
 
         $params = ['contextlevel' => 70];
 
-        $moduleMetadataFieldIds = array_map(function ($item) { return $item->id; }, $DB->get_records_sql($sql, $params));
-        $moduleMetadataFieldLength = count($moduleMetadataFieldIds);
+        $moduleMetadataFields = $DB->get_records_sql($sql, $params);
+
+        $moduleMetadataFieldIds = array_map(function ($item) { return $item->id; }, $moduleMetadataFields);
+
+        $moduleMetadataFieldIdsTracked = [];
+        foreach ($moduleMetadataFields as $moduleMetadataField) {
+            if ($moduleMetadataField->datatype !== 'checkbox'
+            || get_config('block_metadata_status', 'enable_metadata_' . $moduleMetadataField->id . '_tracking')) {
+                array_push($moduleMetadataFieldIdsTracked, $moduleMetadataField->id);
+            }
+        }
+
+        $moduleMetadataFieldIdsTrackedLength = count($moduleMetadataFieldIdsTracked);
+
+        $sharedMetadataShortName = get_config('block_metadata_status', 'shared_metadata_short_name');
+        $sharedMetadataId = array_values(
+            array_filter(
+                $moduleMetadataFields,
+                function($item) use ($sharedMetadataShortName) {
+                    return $item->shortname === $sharedMetadataShortName;
+                }
+            )
+        )[0]->id;
 
         $moduleIds = array_map(function($item) {return $item->id;}, $modules);
         $sql = 'SELECT instanceid, fieldid, data
@@ -68,13 +89,43 @@ class block_metadata_status_external extends external_api {
 
         $sets->close();
 
-        // isset($blockinstance->config->{'moduleselectm' . $row->id})
-
         $metadataStatus = [];
 
         foreach ($modules as $module) {
-            $temp = array_filter($moduleMetadata, function($item) use ($module) { return $item['instanceid'] == $module->id && $item['fieldid'] == 1;});
-            $metadataStatus[] = ['moduleId' => $module->id, 'status' => ['percentage' => 25, 'shared' => $temp[0]['data'] == '1']];
+            $moduleMetadataFieldsFilledLength = 0;
+            foreach ($moduleMetadataFieldIdsTracked as $moduleMetadataFieldIdTracked) {
+                $metadata = array_values(
+                    array_filter(
+                        $moduleMetadata,
+                        function($item) use ($module, $moduleMetadataFieldIdTracked) {
+                            return $item['instanceid'] == $module->id && $item['fieldid'] == $moduleMetadataFieldIdTracked;
+                        }
+                    )
+                )[0];
+
+                $defaultValue = array_values(
+                    array_filter(
+                        $moduleMetadataFields,
+                        function($item) use ($moduleMetadataFieldIdTracked) {
+                            return $item->id === $moduleMetadataFieldIdTracked;
+                        }
+                    )
+                )[0]->defaultdata;
+
+                if ($metadata && $metadata['data'] !== '' && $metadata['data'] !== $defaultValue) {
+                    $moduleMetadataFieldsFilledLength++;
+                }
+            }
+            $percentage = intval((100 * $moduleMetadataFieldsFilledLength ) / $moduleMetadataFieldIdsTrackedLength);
+            $shared = array_values(
+                array_filter(
+                    $moduleMetadata,
+                    function($item) use ($module, $sharedMetadataId) {
+                        return $item['instanceid'] == $module->id && $item['fieldid'] == $sharedMetadataId;
+                    }
+                )
+            )[0]['data'] == '1';
+            $metadataStatus[] = ['moduleId' => $module->id, 'status' => ['percentage' => $percentage, 'shared' => $shared]];
         }
 
         return $metadataStatus;
@@ -132,7 +183,7 @@ class block_metadata_status_external extends external_api {
      *
      * @param int $courseId Course ID
      *
-     * @return array Modules IDs
+     * @return boolean
      *
      * @throws dml_exception
      * @throws invalid_parameter_exception
@@ -145,24 +196,15 @@ class block_metadata_status_external extends external_api {
             )
         );
 
-        $modules = $DB->get_records('course_modules', array('course' => $courseId), null, 'id');
+        $sql = 'SELECT id, shortname, datatype, defaultdata
+            FROM {local_metadata_field}
+            WHERE contextlevel = :contextlevel';
 
-        $moduleIds = array_map(function($item) {return $item->id;}, $modules);
-        $sql = 'SELECT instanceid, fieldid, data
-            FROM {local_metadata};';
+        $params = ['contextlevel' => 70];
 
-        $sets = $DB->get_recordset_sql($sql);
+        $moduleMetadataFields = $DB->get_records_sql($sql, $params);
 
-        $result = [];
-        foreach ($sets as $set) {
-            $result[] = ['instanceid' => $set->instanceid, 'fieldid' => $set->fieldid, 'data' => $set->data];
-        }
-
-        $sets->close();
-
-        $i = array_filter($result, function($item) { return $item['instanceid'] == 2 && $item['fieldid'] == 1;});
-
-        return $i;
+        return $moduleMetadataFields;
     }
 
     /**
@@ -171,12 +213,27 @@ class block_metadata_status_external extends external_api {
      * @return external_description
      */
     public static function get_debug_returns() {
+        /*
         return new external_multiple_structure(
             new external_single_structure(
                 array(
                     'instanceid' => new external_value(PARAM_INT, 'Module ID'),
                     'fieldid' => new external_value(PARAM_INT, 'Module ID'),
                     'data' => new external_value(PARAM_TEXT, 'Module ID'),
+                )
+            )
+        );
+        */
+
+        //return new external_value(PARAM_TEXT, 'Boolean');
+
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'Module ID'),
+                    'shortname' => new external_value(PARAM_TEXT, 'Module ID'),
+                    'datatype' => new external_value(PARAM_TEXT, 'Module ID'),
+                    'defaultdata' => new external_value(PARAM_TEXT, 'Module ID'),
                 )
             )
         );
