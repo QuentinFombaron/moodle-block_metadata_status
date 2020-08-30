@@ -22,7 +22,7 @@ class block_metadata_status_external extends external_api {
     /**
      * Get course module IDs
      *
-     * @return array Modules IDs
+     * @return stdClass Modules IDs
      *
      * @throws dml_exception
      * @throws invalid_parameter_exception
@@ -85,7 +85,7 @@ class block_metadata_status_external extends external_api {
 
         $sets->close();
 
-        $metadataStatus = [];
+        $metadataStatus = new stdClass();
 
         foreach ($modules as $module) {
             $moduleMetadataFieldsFilledLength = 0;
@@ -121,27 +121,42 @@ class block_metadata_status_external extends external_api {
                     }
                 )
             )[0]['data'] == '1';
-            $metadataStatus[] = ['moduleId' => $module->id, 'status' => ['percentage' => $percentage, 'shared' => $shared]];
+            $metadataStatus->modules[] = ['moduleId' => $module->id, 'status' => ['percentage' => $percentage, 'shared' => $shared]];
         }
+
+        $metadataStatus->options->enablePercentageLabel = get_config('block_metadata_status', 'enable_percentage_label') === '1';
+        $metadataStatus->options->progressBarBackgroundColor = get_config('block_metadata_status', 'progress_bar_background_color');
+        $metadataStatus->options->progressBarColor = get_config('block_metadata_status', 'progress_bar_color');
 
         return $metadataStatus;
     }
 
     /**
-     * Return course module IDs array
+     * Return course module IDs
      *
      * @return external_description
      */
     public static function get_modules_status_returns() {
-        return new external_multiple_structure(
-            new external_single_structure(
-                array(
-                    'moduleId' => new external_value(PARAM_INT, 'Module ID'),
-                    'status' => new external_single_structure(
+        return new external_single_structure(
+            array(
+                'modules' => new external_multiple_structure(
+                    new external_single_structure(
                         array(
-                            'percentage' => new external_value(PARAM_INT, 'Percentage of metadata filling'),
-                            'shared' => new external_value(PARAM_BOOL, 'Is module shared')
+                            'moduleId' => new external_value(PARAM_INT, 'Module ID'),
+                            'status' => new external_single_structure(
+                                array(
+                                    'percentage' => new external_value(PARAM_INT, 'Percentage of metadata filling'),
+                                    'shared' => new external_value(PARAM_BOOL, 'Is module shared')
+                                )
+                            )
                         )
+                    )
+                ),
+                'options' => new external_single_structure(
+                    array(
+                        'enablePercentageLabel' => new external_value(PARAM_BOOL, 'Enable percentage label'),
+                        'progressBarBackgroundColor' => new external_value(PARAM_TEXT, 'Progress bar background color'),
+                        'progressBarColor' => new external_value(PARAM_TEXT, 'Progress bar color')
                     )
                 )
             )

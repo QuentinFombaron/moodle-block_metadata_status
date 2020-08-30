@@ -17,6 +17,15 @@ if ($ADMIN->fulltree) {
             DEFAULT_METADATA_STATUS_SHARED_SHORT_NAME,
             PARAM_TEXT));
 
+        $settings->add(new admin_setting_configcheckbox(
+            'block_metadata_status/enable_percentage_label',
+            'Enable percentage label',
+            '',
+            DEFAULT_METADATA_STATUS_ENABLE_PERCENTAGE_LABEL
+        ));
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+
         $settings->add(new admin_setting_heading('block_metadata_status/metadata_tracking',
             'Metadata tracking',
             '')
@@ -32,6 +41,27 @@ if ($ADMIN->fulltree) {
                 DEFAULT_METADATA_STATUS_ENABLE_METADATA_TRACKING
             ));
         }
+
+        /* ---------------------------------------------------------------------------------------------------------- */
+
+        $settings->add(new admin_setting_heading('block_metadata_status/metadata_status_customization',
+                'Metadata status customization',
+                '')
+        );
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_metadata_status/progress_bar_background_color',
+            'Progress bar background color',
+            '',
+            DEFAULT_METADATA_STATUS_PROGRESS_BAR_BACKGROUND_COLOR
+        ));
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_metadata_status/progress_bar_color',
+            'Progress bar color',
+            '',
+            DEFAULT_METADATA_STATUS_PROGRESS_BAR_COLOR
+        ));
     } catch (dml_exception $e) {
     }
 }

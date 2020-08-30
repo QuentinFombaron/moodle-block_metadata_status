@@ -4,7 +4,7 @@
     top: 10%;
     right: 20%;
 }
-.block_metadata_status_container div, .block_metadata_status_shared_icon {
+.block_metadata_status_container div {
     display: inline-block;
     vertical-align: middle;
 }
@@ -19,19 +19,19 @@
     fill: red;
 }
 .block_metadata_status_progress {
-    background-color: lightgray;
     width: 50px;
     height: 10px;
-    border-radius: 25px;
-    border: 2px solid lightgray;
+    border-radius: 5px;
+    border: 2px solid;
 }
 .block_metadata_status_progress_bar {
     border-radius: 25px;
     float: left;
-    background-color: green;
     height: 100%;
 }
 .block_metadata_status_pourcentage {
+    width: 40px;
     font-size: 14px;
+    margin-left: 5px;
     color: grey;
 }
