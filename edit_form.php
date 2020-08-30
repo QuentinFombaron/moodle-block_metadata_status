@@ -14,7 +14,6 @@ class block_metadata_status_edit_form extends block_edit_form {
      * @param object $mform
      *
      * @throws coding_exception
-     * @throws dml_exception
      */
     protected function specific_definition($mform) {
 
@@ -25,21 +24,5 @@ class block_metadata_status_edit_form extends block_edit_form {
         $mform->addElement('text', 'config_text', get_string('blockstring', 'block_metadata_status'));
         $mform->setDefault('config_text', 'default value');
         $mform->setType('config_text', PARAM_RAW);
-
-        $moduleMetadataFields = block_metadata_status_get_module_metadata_fields();
-
-        foreach ($moduleMetadataFields as $metadataField) {
-            $metadataOptions = [];
-
-            $metadataOptions[] = $mform->createElement(
-                'checkbox',
-                'config_metadata_' . $metadataField->id,
-                $metadataField->name . '(' . $metadataField->datatype . ')'
-            );
-
-            $mform->addGroup(
-                $metadataOptions
-            );
-        }
     }
 }

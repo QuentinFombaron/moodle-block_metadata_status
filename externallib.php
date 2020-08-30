@@ -22,8 +22,6 @@ class block_metadata_status_external extends external_api {
     /**
      * Get course module IDs
      *
-     * @param int $courseId Course ID
-     *
      * @return array Modules IDs
      *
      * @throws dml_exception
@@ -46,8 +44,6 @@ class block_metadata_status_external extends external_api {
         $params = ['contextlevel' => 70];
 
         $moduleMetadataFields = $DB->get_records_sql($sql, $params);
-
-        $moduleMetadataFieldIds = array_map(function ($item) { return $item->id; }, $moduleMetadataFields);
 
         $moduleMetadataFieldIdsTracked = [];
         foreach ($moduleMetadataFields as $moduleMetadataField) {
@@ -147,93 +143,6 @@ class block_metadata_status_external extends external_api {
                             'shared' => new external_value(PARAM_BOOL, 'Is module shared')
                         )
                     )
-                )
-            )
-        );
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * All necessary parameters
-     *
-     * @return external_function_parameters
-     */
-    public static function get_debug_parameters() {
-        return new external_function_parameters(
-            array(
-                'courseId' => new external_value(PARAM_INT, 'ID of course', VALUE_REQUIRED),
-            )
-        );
-    }
-
-    /**
-     * Get course module IDs
-     *
-     * @param int $courseId Course ID
-     *
-     * @return boolean
-     *
-     * @throws dml_exception
-     * @throws invalid_parameter_exception
-     */
-    public static function get_debug($courseId) {
-        global $DB;
-
-        self::validate_parameters(self::get_modules_status_parameters(), array(
-                'courseId' => $courseId
-            )
-        );
-
-        $sql = 'SELECT id, shortname, datatype, defaultdata
-            FROM {local_metadata_field}
-            WHERE contextlevel = :contextlevel';
-
-        $params = ['contextlevel' => 70];
-
-        $moduleMetadataFields = $DB->get_records_sql($sql, $params);
-
-        return $moduleMetadataFields;
-    }
-
-    /**
-     * Return course module IDs array
-     *
-     * @return external_description
-     */
-    public static function get_debug_returns() {
-        /*
-        return new external_multiple_structure(
-            new external_single_structure(
-                array(
-                    'instanceid' => new external_value(PARAM_INT, 'Module ID'),
-                    'fieldid' => new external_value(PARAM_INT, 'Module ID'),
-                    'data' => new external_value(PARAM_TEXT, 'Module ID'),
-                )
-            )
-        );
-        */
-
-        //return new external_value(PARAM_TEXT, 'Boolean');
-
-        return new external_multiple_structure(
-            new external_single_structure(
-                array(
-                    'id' => new external_value(PARAM_INT, 'Module ID'),
-                    'shortname' => new external_value(PARAM_TEXT, 'Module ID'),
-                    'datatype' => new external_value(PARAM_TEXT, 'Module ID'),
-                    'defaultdata' => new external_value(PARAM_TEXT, 'Module ID'),
                 )
             )
         );

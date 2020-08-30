@@ -6,7 +6,7 @@ require_once($CFG->dirroot.'/blocks/metadata_status/lib.php');
 
 if ($ADMIN->fulltree) {
     try {
-        $settings->add(new admin_setting_heading('block_metadata_status/metadata_tracking',
+        $settings->add(new admin_setting_heading('block_metadata_status/metadata_tracking_configuration',
                 'Metadata tracking configuration',
                 '')
         );

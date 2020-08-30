@@ -4,6 +4,7 @@ defined('MOODLE_INTERNAL') || die;
 
 /** Administration configuration to enable metadata tracking */
 const DEFAULT_METADATA_STATUS_ENABLE_METADATA_TRACKING = 1;
+/** Administration configuration to specify the metadata shortname of sharing feature */
 const DEFAULT_METADATA_STATUS_SHARED_SHORT_NAME = 'shared';
 
 /**
