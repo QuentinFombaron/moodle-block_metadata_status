@@ -4,6 +4,7 @@ namespace block_metadata_status\output;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
 use renderable;
 use renderer_base;
 use stdClass;
@@ -31,11 +32,25 @@ class metadata_status implements renderable, templatable {
      * @param renderer_base $output
      *
      * @return stdClass
+     *
+     * @throws coding_exception
      */
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
 
-        $data->test = 'Blabla12';
+        $data->sharedModules = 0;
+        $data->sharedModulesText = strtoupper(get_string('shared_modules', 'block_metadata_status'));
+
+        $data->filledModules = 0;
+        $data->filledModulesText = strtoupper(get_string('filled_modules', 'block_metadata_status'));
+
+        $data->existingMetadata = 0;
+        $data->existingMetadataText = strtoupper(get_string('existing_metadata', 'block_metadata_status'));
+
+        $data->trackedMetadata = 0;
+        $data->trackedMetadataText = strtoupper(get_string('tracked_metadata', 'block_metadata_status'));
+
+        $data->text = $this->config->text;
 
         return $data;
     }

@@ -1,12 +1,7 @@
 .block_metadata_status_container {
     height: 20px;
-    position: absolute;
     top: 10%;
     right: 20%;
-}
-.block_metadata_status_container div {
-    display: inline-block;
-    vertical-align: middle;
 }
 .block_metadata_status_shared_icon {
     width: 14px;
@@ -26,12 +21,36 @@
 }
 .block_metadata_status_progress_bar {
     border-radius: 25px;
-    float: left;
-    height: 100%;
 }
 .block_metadata_status_pourcentage {
     width: 40px;
     font-size: 14px;
-    margin-left: 5px;
     color: grey;
+}
+
+.block_metadata_status table {
+    border-collapse: unset;
+}
+.block_metadata_status td {
+    background-color: #f7f7f7;
+}
+.block_metadata_status td.footer {
+    width: 100%;
+    display: inline-table;
+    padding: 5px;
+}
+.block_metadata_status td.content .number {
+    display: inline-table;
+    font-weight: bold;
+    font-size: xx-large;
+}
+.block_metadata_status td.content .text-container {
+    display: inline-table;
+    font-weight: bold;
+    background-color: #1077d2;
+    color: white;
+}
+.block_metadata_status td.content .icon {
+    display: inline-block;
+    color: white;
 }

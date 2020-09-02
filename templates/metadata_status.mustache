@@ -26,19 +26,81 @@
         * none
 
         Context variables required for this template:
-        * test
+        * sharedModules
+        * sharedModulesText
+        * filledModules
+        * filledModulesText
+        * existingMetadata
+        * existingMetadataText
+        * trackedMetadata
+        * trackedMetadataText
+        * text
 
         Optional context variables for this template:
         * none
 
     Example context (json):
     {
-        "test": "Test123",
+        "sharedModules": 10,
+        "sharedModulesText": "SHARED MODULES",
+        "filledModules": 10,
+        "filledModulesText": "FILLED MODULES",
+        "existingMetadata": 10,
+        "existingMetadataText": "EXISTING METADATA",
+        "trackedMetadata": 10,
+        "trackedMetadataText": "TRACKED METADATA",
+        "text": "Description...",
     }
 }}
-<div class="w-100 no-overflow">
-    <div class="icon fa fa-globe fa-fw"></div>
-    <div>
-        {{ test }}
-    </div>
+<div id='block-content' class="w-100 no-overflow">
+    <table class="w-100 h-100" cellspacing=10>
+        <tbody>
+            <tr>
+                <td class="content w-50 rounded p-0">
+                    <div class="number w-100 h-50 text-center">
+                        <span class="align-middle">{{sharedModules}}</span>
+                    </div>
+                    <div class="text-container w-100 h-50 rounded-bottom text-center">
+                        <div class="icon fa fa-share-alt fa-fw align-middle mr-1"></div>
+                        <span class="align-middle">{{sharedModulesText}}</span>
+                    </div>
+                </td>
+                <td class="content w-50 rounded p-0">
+                    <div class="number w-100 h-50 text-center">
+                        <span class="align-middle">{{filledModules}}</span>
+                    </div>
+                    <div class="text-container w-100 h-50 rounded-bottom text-center">
+                        <div class="icon fa fa-check fa-fw align-middle mr-1"></div>
+                        <span class="align-middle">{{filledModulesText}}</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="content w-50 rounded p-0">
+                    <div class="number w-100 h-50 text-center">
+                        <span class="align-middle">{{existingMetadata}}</span>
+                    </div>
+                    <div class="text-container w-100 h-50 rounded-bottom text-center">
+                        <div class="icon fa fa-database fa-fw align-middle mr-1"></div>
+                        <span class="align-middle">{{existingMetadataText}}</span>
+                    </div>
+                  </td>
+                  <td class="content w-50 rounded p-0">
+                    <div class="number w-100 h-50 text-center">
+                        <span class="align-middle">{{trackedMetadata}}</span>
+                    </div>
+                    <div class="text-container w-100 h-50 rounded-bottom text-center">
+                        <div class="icon fa fa-bullseye fa-fw align-middle mr-1"></div>
+                        <span class="align-middle">{{trackedMetadataText}}</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="footer w-100 rounded">
+                    <div class="icon fa fa-info fa-fw align-middle mr-1"></div>
+                    <span class="align-middle">{{text}}</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
