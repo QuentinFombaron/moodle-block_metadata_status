@@ -36,7 +36,6 @@
 }
 .block_metadata_status td.footer {
     width: 100%;
-    display: inline-table;
     padding: 5px;
 }
 .block_metadata_status td.content .number {

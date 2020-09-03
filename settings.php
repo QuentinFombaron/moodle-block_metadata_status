@@ -2,6 +2,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+global $CFG;
+
 require_once($CFG->dirroot.'/blocks/metadata_status/lib.php');
 
 if ($ADMIN->fulltree) {
