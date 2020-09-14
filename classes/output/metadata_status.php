@@ -70,21 +70,26 @@ class metadata_status implements renderable, templatable {
         $blockid = $DB->get_field('block_instances', 'id', ['blockname' => 'metadata_status', 'parentcontextid' => $coursecontext->id]);
         $context = context_block::instance($blockid);
 
-        $this->config->text = file_rewrite_pluginfile_urls(
-            $this->config->text,
-            'pluginfile.php',
-            $context->id,
-            'block_metadata_status',
-            'content',
-            null
-        );
+        if (isset($this->config->text)) {
+            $this->config->text = file_rewrite_pluginfile_urls(
+                $this->config->text,
+                'pluginfile.php',
+                $context->id,
+                'block_metadata_status',
+                'content',
+                null
+            );
+        } else {
+            /** TODO Improve admin HTML Editor */
+            $this->config->text = get_config('block_metadata_status', 'config_text_admin');
+        }
 
         $format = FORMAT_HTML;
         if (isset($this->config->format)) {
             $format = $this->config->format;
         }
 
-        $data->text = format_text($this->config->text, $format, $filteropt);;
+        $data->text = format_text($this->config->text, $format, $filteropt);
 
         return $data;
     }

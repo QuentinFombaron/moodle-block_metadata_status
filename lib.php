@@ -79,6 +79,7 @@ function block_metadata_status_get_shared_modules_length() {
  * @throws dml_exception
  */
 function block_metadata_status_get_filled_modules_length($courseId) {
+
     $metadataStatus = block_metadata_status_get_metadata_status($courseId)->modules;
 
     $modulesFilled = array_values(
@@ -184,6 +185,8 @@ function block_metadata_status_get_metadata_status($courseId)
     $sets->close();
 
     $metadataStatus = new stdClass();
+
+    $metadataStatus->modules = [];
 
     foreach ($modules as $module) {
         $moduleMetadataFieldsFilledLength = 0;

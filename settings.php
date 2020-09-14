@@ -26,6 +26,13 @@ if ($ADMIN->fulltree) {
             DEFAULT_METADATA_STATUS_ENABLE_PERCENTAGE_LABEL
         ));
 
+        $settings->add(new admin_setting_confightmleditor(
+            'block_metadata_status/config_text_admin',
+            get_string('contentinputlabel', 'block_metadata_status'),
+            '',
+            ''
+        ));
+
         /* ---------------------------------------------------------------------------------------------------------- */
 
         $settings->add(new admin_setting_heading('block_metadata_status/metadata_tracking',
