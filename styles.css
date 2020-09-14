@@ -30,13 +30,15 @@
 
 .block_metadata_status table {
     border-collapse: unset;
+    table-layout: fixed;
 }
 .block_metadata_status td {
     background-color: #f7f7f7;
 }
 .block_metadata_status td.footer {
     width: 100%;
-    padding: 5px;
+    padding: 10px 15px;
+    text-align: justify;
 }
 .block_metadata_status td.content .number {
     display: inline-table;

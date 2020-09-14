@@ -14,6 +14,18 @@ class block_metadata_status extends block_base {
     }
 
     /**
+     * Enable to add the block only in a course
+     *
+     * @return array
+     */
+    public function applicable_formats() {
+        return array(
+            'site-index' => true,
+            'course-view' => true,
+        );
+    }
+
+    /**
      * Allow more than one instance of the block on a page
      *
      * @return bool
@@ -27,15 +39,6 @@ class block_metadata_status extends block_base {
      *
      */
     public function specialization() {
-    }
-
-    /**
-     * Locations where block can be displayed
-     *
-     * @return array
-     */
-    public function applicable_formats() {
-        return array('all'=>true);
     }
 
     /**
@@ -89,5 +92,89 @@ class block_metadata_status extends block_base {
         }
 
         return $this->content;
+    }
+
+    /**
+     * Serialize and store config data
+     *
+     * Save data from file manager when user is saving configuration.
+     * Delete file storage if user disable custom emojis.
+     *
+     * @param mixed $data
+     * @param mixed $nolongerused
+     */
+    public function instance_config_save($data, $nolongerused = false) {
+
+        $config = clone($data);
+
+        $config->text = file_save_draft_area_files(
+            $data->text['itemid'],
+            $this->context->id,
+            'block_metadata_status',
+            'content',
+            0,
+            array('subdirs' => true),
+            $data->text['text']
+        );
+
+        $config->format = $data->text['format'];
+
+        parent::instance_config_save($config, $nolongerused);
+
+    }
+
+    /**
+     * Delete file storage.
+     *
+     * @return bool
+     */
+    public function instance_delete() {
+
+        $fs = get_file_storage();
+
+        $fs->delete_area_files($this->context->id, 'block_metadata_status');
+
+        return true;
+
+    }
+
+    /**
+     * Copy any block-specific data when copying to a new block instance.
+     *
+     * @param int $fromid the id number of the block instance to copy from
+     * @return boolean
+     */
+    public function instance_copy($fromid) {
+
+        $fromcontext = context_block::instance($fromid);
+
+        $fs = get_file_storage();
+
+        if (!$fs->is_area_empty($fromcontext->id, 'block_metadata_status', 'content', 0, false)) {
+
+            $draftitemid = 0;
+
+            file_prepare_draft_area(
+                $draftitemid,
+                $fromcontext->id,
+                'block_metadata_status',
+                'content',
+                0,
+                array('subdirs' => true)
+            );
+
+            file_save_draft_area_files(
+                $draftitemid,
+                $this->context->id,
+                'block_metadata_status',
+                'content',
+                0,
+                array('subdirs' => true)
+            );
+
+        }
+
+        return true;
+
     }
 }

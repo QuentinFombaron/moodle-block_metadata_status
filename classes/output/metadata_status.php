@@ -9,6 +9,9 @@ global $CFG;
 require_once($CFG->dirroot.'/blocks/metadata_status/lib.php');
 
 use coding_exception;
+use context;
+use context_block;
+use context_course;
 use dml_exception;
 use renderable;
 use renderer_base;
@@ -42,7 +45,7 @@ class metadata_status implements renderable, templatable {
      * @throws dml_exception
      */
     public function export_for_template(renderer_base $output) {
-        global $COURSE;
+        global $COURSE, $DB;
 
         $data = new stdClass();
 
@@ -58,8 +61,55 @@ class metadata_status implements renderable, templatable {
         $data->trackedMetadata = block_metadata_status_get_tracked_metadata_length();
         $data->trackedMetadataText = strtoupper(get_string('tracked_metadata', 'block_metadata_status'));
 
-        $data->text = $this->config->text;
+        $filteropt = new stdClass;
+        if ($this->content_is_trusted()) {
+            $filteropt->noclean = true;
+        }
+
+        $coursecontext = context_course::instance($COURSE->id);
+        $blockid = $DB->get_field('block_instances', 'id', ['blockname' => 'metadata_status', 'parentcontextid' => $coursecontext->id]);
+        $context = context_block::instance($blockid);
+
+        $this->config->text = file_rewrite_pluginfile_urls(
+            $this->config->text,
+            'pluginfile.php',
+            $context->id,
+            'block_metadata_status',
+            'content',
+            null
+        );
+
+        $format = FORMAT_HTML;
+        if (isset($this->config->format)) {
+            $format = $this->config->format;
+        }
+
+        $data->text = format_text($this->config->text, $format, $filteropt);;
 
         return $data;
+    }
+
+    /**
+     * Is content trusted
+     *
+     * @return bool
+     *
+     * @throws coding_exception
+     */
+    public function content_is_trusted() {
+        global $SCRIPT, $COURSE;
+
+        if (!$context = context::instance_by_id(context_course::instance($COURSE->id)->get_parent_context()->id, IGNORE_MISSING)) {
+            return false;
+        }
+        if ($context->contextlevel == CONTEXT_USER) {
+            if ($SCRIPT === '/my/index.php') {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

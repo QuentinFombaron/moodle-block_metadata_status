@@ -20,9 +20,58 @@ class block_metadata_status_edit_form extends block_edit_form {
         // Section header title according to language file.
         $mform->addElement('header', 'config_header', get_string('blocksettings', 'block'));
 
-        // A sample string variable with a default value.
-        $mform->addElement('text', 'config_text', get_string('blockstring', 'block_metadata_status'));
-        $mform->setDefault('config_text', 'default value');
+        $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $this->block->context);
+        $mform->addElement(
+            'editor',
+            'config_text',
+            get_string('contentinputlabel', 'block_metadata_status'),
+            null,
+            $editoroptions
+        );
         $mform->setType('config_text', PARAM_RAW);
+
+        $mform->addHelpButton(
+            'config_text',
+            'howto_text',
+            'block_metadata_status'
+        );
+    }
+
+    /**
+     * Editor data
+     *
+     * @param {array} $defaults
+     */
+    public function set_data($defaults) {
+        if (!empty($this->block->config) && is_object($this->block->config)) {
+            $text = $this->block->config->text;
+            $draftideditor = file_get_submitted_draft_itemid('config_text');
+            if (empty($text)) {
+                $currenttext = '';
+            } else {
+                $currenttext = $text;
+            }
+            $defaults->config_text['text'] = file_prepare_draft_area(
+                $draftideditor,
+                $this->block->context->id,
+                'block_metadata_status',
+                'content',
+                0,
+                array('subdirs' => true),
+                $currenttext
+            );
+            $defaults->config_text['itemid'] = $draftideditor;
+            $defaults->config_text['format'] = $this->block->config->format;
+        }
+
+        unset($this->block->config->text);
+
+        parent::set_data($defaults);
+
+        if (!isset($this->block->config)) {
+            $this->block->config = new stdClass();
+        }
+
+        $this->block->config->text = $text;
     }
 }
