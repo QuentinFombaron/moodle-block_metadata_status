@@ -7,12 +7,6 @@
     width: 14px;
     height: 14px;
 }
-.block_metadata_status_shared_icon.enabled {
-    fill: green;
-}
-.block_metadata_status_shared_icon.disabled {
-    fill: red;
-}
 .block_metadata_status_progress {
     width: 50px;
     height: 10px;

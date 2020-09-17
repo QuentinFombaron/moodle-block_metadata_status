@@ -8,10 +8,12 @@ const DEFAULT_METADATA_STATUS_ENABLE_METADATA_TRACKING = 1;
 const DEFAULT_METADATA_STATUS_ENABLE_PERCENTAGE_LABEL = 1;
 const DEFAULT_METADATA_STATUS_SHARED_SHORT_NAME = 'shared';
 const DEFAULT_METADATA_STATUS_PROGRESS_BAR_BACKGROUND_COLOR = '#D3D3D3';
-const DEFAULT_METADATA_STATUS_PROGRESS_BAR_COLOR = '#008000';
+const DEFAULT_METADATA_STATUS_PROGRESS_BAR_COLOR_BEFORE_THRESHOLD = '#FF0000';
+const DEFAULT_METADATA_STATUS_PROGRESS_BAR_COLOR_AFTER_THRESHOLD = '#008000';
+const DEFAULT_METADATA_STATUS_PROGRESS_BAR_THRESHOLD = 7;
 
 /**
- * Get module metadata
+ * Get module metadata fields
  *
  * @return array
  *
@@ -27,6 +29,19 @@ function block_metadata_status_get_module_metadata_fields() {
     $params = ['contextlevel' => 70, 'datatype' => 'checkbox'];
 
     return $DB->get_records_sql($sql, $params);
+}
+
+/**
+ * Get module metadata field ids
+ *
+ * @return array
+ *
+ * @throws dml_exception
+ */
+function block_metadata_status_get_module_metadata_field_ids() {
+    return array_map(function($metadata) {
+        return $metadata->id;
+    }, block_metadata_status_get_module_metadata_fields());
 }
 
 /**
@@ -58,15 +73,25 @@ function block_metadata_status_get_shared_field_id() {
  * @throws dml_exception
  */
 function block_metadata_status_get_shared_modules_length() {
-    global $DB;
+    global $DB, $COURSE;
+
+    $modules = $DB->get_records('course_modules', array('course' => $COURSE->id), null, 'id');
+
+    $moduleIds = array_map(function ($item) {
+        return $item->id;
+    }, $modules);
 
     $sharedMetadataId = block_metadata_status_get_shared_field_id();
 
     $sql = 'SELECT id
             FROM {local_metadata}
-            WHERE fieldid = :sharedid AND data = :data';
+            WHERE (instanceid = :module' . join(' OR instanceid = :module', $moduleIds) . ') AND fieldid = :sharedid AND data = :data';
 
     $params = ['sharedid' => $sharedMetadataId, 'data' => '1'];
+
+    foreach ($moduleIds as $moduleId) {
+        $params['module' . $moduleId] = $moduleId;
+    }
 
     return count($DB->get_records_sql($sql, $params));
 }
@@ -119,13 +144,18 @@ function block_metadata_status_get_metadata_length() {
 function block_metadata_status_get_tracked_metadata_length() {
     global $DB;
 
-    $sql = 'SELECT id
+    $sql = 'SELECT name
             FROM {config_plugins}
             WHERE plugin = :plugin AND name LIKE :name AND value = :value';
 
     $params = ['plugin' => 'block_metadata_status', 'name' => 'enable_metadata%', 'value' => '1'];
 
-    return count($DB->get_records_sql($sql, $params));
+    $metadataFieldsIds = block_metadata_status_get_module_metadata_field_ids();
+    $trackedMetadataIds = array_map(function($metadata) {
+        return intval(strtr($metadata->name, ['enable_metadata_' => '', '_tracking' => '']));
+    }, $DB->get_records_sql($sql, $params));
+
+    return count(array_intersect($metadataFieldsIds, $trackedMetadataIds));
 }
 
 /**
@@ -153,7 +183,8 @@ function block_metadata_status_get_metadata_status($courseId)
     $moduleMetadataFieldIdsTracked = [];
     foreach ($moduleMetadataFields as $moduleMetadataField) {
         if ($moduleMetadataField->datatype !== 'checkbox'
-            || get_config('block_metadata_status', 'enable_metadata_' . $moduleMetadataField->id . '_tracking')) {
+            && get_config('block_metadata_status', 'enable_metadata_' . $moduleMetadataField->id . '_tracking')
+        ) {
             array_push($moduleMetadataFieldIdsTracked, $moduleMetadataField->id);
         }
     }
@@ -229,15 +260,20 @@ function block_metadata_status_get_metadata_status($courseId)
 
         if (count($shared) === 1) {
             $shared = $shared[0]['data'] == '1';
-            $metadataStatus->modules[] = ['moduleId' => $module->id, 'status' => ['percentage' => $percentage, 'shared' => $shared]];
+        } else {
+            $shared = false;
         }
+
+        $metadataStatus->modules[] = ['id' => $module->id, 'status' => ['percentage' => $percentage, 'shared' => $shared]];
     }
 
     $metadataStatus->options = new stdClass();
 
     $metadataStatus->options->enablePercentageLabel = get_config('block_metadata_status', 'enable_percentage_label') === '1';
     $metadataStatus->options->progressBarBackgroundColor = get_config('block_metadata_status', 'progress_bar_background_color');
-    $metadataStatus->options->progressBarColor = get_config('block_metadata_status', 'progress_bar_color');
+    $metadataStatus->options->progressBarThreshold = get_config('block_metadata_status', 'progress_bar_threshold');
+    $metadataStatus->options->progressBarColorBeforeThreshold = get_config('block_metadata_status', 'progress_bar_color_before_threshold');
+    $metadataStatus->options->progressBarColorAfterThreshold = get_config('block_metadata_status', 'progress_bar_color_after_threshold');
 
     return $metadataStatus;
 }

@@ -15,30 +15,53 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
                 ]);
 
                 $.when(promises[0]).done((moduleStatus) => {
-                    /* eslint-disable no-console */
-                    /** TODO Delete console.log */
-                    console.log(moduleStatus);
-                    /* eslint-enable no-console */
-
-                    injectHTML(moduleStatus.modules, moduleStatus.options.enablePercentageLabel);
+                    injectHTML(moduleStatus);
 
                     $('.block_metadata_status_progress').css({
                         'background-color': moduleStatus.options.progressBarBackgroundColor,
                         'border-color': moduleStatus.options.progressBarBackgroundColor
                     });
-                    $('.block_metadata_status_progress_bar').css({'background-color': moduleStatus.options.progressBarColor});
+                    $('.block_metadata_status_shared_icon.disabled').css({
+                        'fill': moduleStatus.options.progressBarColorBeforeThreshold,
+                    });
+                    $('.block_metadata_status_shared_icon.enabled').css({
+                        'fill': moduleStatus.options.progressBarColorAfterThreshold,
+                    });
                 });
 
                 /**
                  * Inject Metadata Status HTML
                  *
-                 * @param {{moduleId: number, status: {percentage: number, shared: boolean}}[]} moduleStatus
-                 * @param {boolean} enablePercentageLabel
+                 * @param {
+                 * {
+                 *  modules: {
+                 *      id: number,
+                 *      status: {
+                 *          percentage: number,
+                 *          shared: boolean
+                 *      }
+                 *  }[],
+                 *  options: {
+                 *      enablePercentageLabel: string,
+                 *      progressBarBackgroundColor: string,
+                 *      progressBarThreshold: number,
+                 *      progressBarColorBeforeThreshold: string,
+                 *      progressBarColorAfterThreshold: string
+                 *      }
+                 *  }
+                 * } moduleStatus
                  */
-                function injectHTML(moduleStatus, enablePercentageLabel) {
-                    for (const data of moduleStatus) {
-                        $('#module-' + data.moduleId + ' .activityinstance')
-                            .append(getHTML(data.status.percentage, data.status.shared, enablePercentageLabel));
+                function injectHTML(moduleStatus) {
+                    for (const module of moduleStatus.modules) {
+                        $('#module-' + module.id + ' .activityinstance')
+                            .append(
+                                getHTML(module.status.percentage, module.status.shared, moduleStatus.options.enablePercentageLabel)
+                        );
+                        $('#module-' + module.id + ' .block_metadata_status_progress_bar').css({
+                            'background-color': (module.status.percentage < (moduleStatus.options.progressBarThreshold * 10)) ?
+                                moduleStatus.options.progressBarColorBeforeThreshold :
+                                moduleStatus.options.progressBarColorAfterThreshold
+                        });
                     }
                 }
 

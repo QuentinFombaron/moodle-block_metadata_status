@@ -50,7 +50,7 @@ class block_metadata_status_external extends external_api {
                 'modules' => new external_multiple_structure(
                     new external_single_structure(
                         array(
-                            'moduleId' => new external_value(PARAM_INT, 'Module ID'),
+                            'id' => new external_value(PARAM_INT, 'Module ID'),
                             'status' => new external_single_structure(
                                 array(
                                     'percentage' => new external_value(PARAM_INT, 'Percentage of metadata filling'),
@@ -64,7 +64,9 @@ class block_metadata_status_external extends external_api {
                     array(
                         'enablePercentageLabel' => new external_value(PARAM_BOOL, 'Enable percentage label'),
                         'progressBarBackgroundColor' => new external_value(PARAM_TEXT, 'Progress bar background color'),
-                        'progressBarColor' => new external_value(PARAM_TEXT, 'Progress bar color')
+                        'progressBarThreshold' => new external_value(PARAM_INT, 'Progress bar threshold'),
+                        'progressBarColorBeforeThreshold' => new external_value(PARAM_TEXT, 'Progress bar color before threshold'),
+                        'progressBarColorAfterThreshold' => new external_value(PARAM_TEXT, 'Progress bar color after threshold')
                     )
                 )
             )

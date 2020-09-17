@@ -65,11 +65,27 @@ if ($ADMIN->fulltree) {
             DEFAULT_METADATA_STATUS_PROGRESS_BAR_BACKGROUND_COLOR
         ));
 
-        $settings->add(new admin_setting_configcolourpicker(
-            'block_metadata_status/progress_bar_color',
-            'Progress bar color',
+        $thresholds = range(0, 90, 10);
+
+        $settings->add(new admin_setting_configselect('block_metadata_status/progress_bar_threshold',
+            'Progress bar threshold',
             '',
-            DEFAULT_METADATA_STATUS_PROGRESS_BAR_COLOR
+            DEFAULT_METADATA_STATUS_PROGRESS_BAR_THRESHOLD,
+            $thresholds
+        ));
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_metadata_status/progress_bar_color_before_threshold',
+            'Progress bar color before threshold',
+            '',
+            DEFAULT_METADATA_STATUS_PROGRESS_BAR_COLOR_BEFORE_THRESHOLD
+        ));
+
+        $settings->add(new admin_setting_configcolourpicker(
+            'block_metadata_status/progress_bar_color_after_threshold',
+            'Progress bar color after threshold',
+            '',
+            DEFAULT_METADATA_STATUS_PROGRESS_BAR_COLOR_AFTER_THRESHOLD
         ));
     } catch (dml_exception $e) {
     }
