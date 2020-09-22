@@ -34,6 +34,7 @@
         * existingMetadataText
         * trackedMetadata
         * trackedMetadataText
+        * hasText
         * text
 
         Optional context variables for this template:
@@ -49,6 +50,7 @@
         "existingMetadataText": "EXISTING METADATA",
         "trackedMetadata": 10,
         "trackedMetadataText": "TRACKED METADATA",
+        "hasText": true,
         "text": "Description...",
     }
 }}
@@ -57,50 +59,62 @@
         <tbody>
             <tr>
                 <td class="content w-50 rounded p-0">
-                    <div class="number w-100 h-50 text-center">
-                        <span class="align-middle">{{sharedModules}}</span>
+                    <div class="number d-flex w-100 py-2 text-center">
+                        <span class="m-auto">{{sharedModules}}</span>
                     </div>
-                    <div class="text-container w-100 h-50 rounded-bottom text-center">
-                        <div class="icon fa fa-share-alt fa-fw align-middle mr-1"></div>
-                        <span class="align-middle">{{sharedModulesText}}</span>
+                    <div class="text-container w-100 d-flex rounded-bottom text-center">
+                        <div class="py-2">
+                            <div class="icon fa fa-share-alt fa-fw align-middle mr-1"></div>
+                            <span class="align-middle">{{sharedModulesText}}</span>
+                        </div>
                     </div>
                 </td>
                 <td class="content w-50 rounded p-0">
-                    <div class="number w-100 h-50 text-center">
-                        <span class="align-middle">{{filledModules}}</span>
+                    <div class="number d-flex w-100 py-2 text-center">
+                        <span class="m-auto">{{filledModules}}</span>
                     </div>
-                    <div class="text-container w-100 h-50 rounded-bottom text-center">
-                        <div class="icon fa fa-check fa-fw align-middle mr-1"></div>
-                        <span class="align-middle">{{filledModulesText}}</span>
+                    <div class="text-container w-100 d-flex rounded-bottom text-center">
+                        <div class="py-2">
+                            <div class="icon fa fa-check fa-fw align-middle mr-1"></div>
+                            <span class="align-middle">{{filledModulesText}}</span>
+                        </div>
                     </div>
                 </td>
             </tr>
             <tr>
                 <td class="content w-50 rounded p-0">
-                    <div class="number w-100 h-50 text-center">
-                        <span class="align-middle">{{existingMetadata}}</span>
+                    <div class="number d-flex w-100 py-2 text-center">
+                        <span class="m-auto">{{existingMetadata}}</span>
                     </div>
-                    <div class="text-container w-100 h-50 rounded-bottom text-center">
-                        <div class="icon fa fa-database fa-fw align-middle mr-1"></div>
-                        <span class="align-middle">{{existingMetadataText}}</span>
+                    <div class="text-container w-100 d-flex rounded-bottom text-center">
+                        <div class="py-2">
+                            <div class="icon fa fa-database fa-fw align-middle mr-1"></div>
+                            <span class="align-middle">{{existingMetadataText}}</span>
+                        </div>
                     </div>
                   </td>
                   <td class="content w-50 rounded p-0">
-                    <div class="number w-100 h-50 text-center">
-                        <span class="align-middle">{{trackedMetadata}}</span>
+                    <div class="number d-flex w-100 py-2 text-center">
+                        <span class="m-auto">{{trackedMetadata}}</span>
                     </div>
-                    <div class="text-container w-100 h-50 rounded-bottom text-center">
-                        <div class="icon fa fa-bullseye fa-fw align-middle mr-1"></div>
-                        <span class="align-middle">{{trackedMetadataText}}</span>
+                    <div class="text-container w-100 d-flex rounded-bottom text-center">
+                        <div class="py-2">
+                            <div class="icon fa fa-bullseye fa-fw align-middle mr-1"></div>
+                            <span class="align-middle">{{trackedMetadataText}}</span>
+                        </div>
                     </div>
                 </td>
             </tr>
+            {{#hasText}}
             <tr>
                 <td colspan="2" class="footer w-100 rounded">
-                    <div class="icon fa fa-info fa-fw align-middle mr-1"></div>
-                    <span class="align-middle">{{{text}}}</span>
+                    <div class="align-middle">
+                        <div class="icon fa fa-info-circle fa-fw align-middle mr-1"></div>
+                        {{{text}}}
+                    </div>
                 </td>
             </tr>
+            {{/hasText}}
         </tbody>
     </table>
 </div>

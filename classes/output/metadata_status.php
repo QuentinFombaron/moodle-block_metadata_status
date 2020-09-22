@@ -50,16 +50,16 @@ class metadata_status implements renderable, templatable {
         $data = new stdClass();
 
         $data->sharedModules = block_metadata_status_get_shared_modules_length();
-        $data->sharedModulesText = strtoupper(get_string('shared_modules', 'block_metadata_status'));
+        $data->sharedModulesText = mb_strtoupper(get_string('shared_modules', 'block_metadata_status'));
 
         $data->filledModules = block_metadata_status_get_filled_modules_length($COURSE->id);
-        $data->filledModulesText = strtoupper(get_string('filled_modules', 'block_metadata_status'));
+        $data->filledModulesText = mb_strtoupper(get_string('filled_modules', 'block_metadata_status'));
 
         $data->existingMetadata = block_metadata_status_get_metadata_length();
-        $data->existingMetadataText = strtoupper(get_string('existing_metadata', 'block_metadata_status'));
+        $data->existingMetadataText = mb_strtoupper(get_string('existing_metadata', 'block_metadata_status'));
 
         $data->trackedMetadata = block_metadata_status_get_tracked_metadata_length();
-        $data->trackedMetadataText = strtoupper(get_string('tracked_metadata', 'block_metadata_status'));
+        $data->trackedMetadataText = mb_strtoupper(get_string('tracked_metadata', 'block_metadata_status'));
 
         $filteropt = new stdClass;
         if ($this->content_is_trusted()) {
@@ -70,7 +70,7 @@ class metadata_status implements renderable, templatable {
         $blockid = $DB->get_field('block_instances', 'id', ['blockname' => 'metadata_status', 'parentcontextid' => $coursecontext->id]);
         $context = context_block::instance($blockid);
 
-        if (isset($this->config->text)) {
+        if (isset($this->config->text) && $this->config->text !== null && $this->config->text !== '' && strlen($this->config->text) > 0) {
             $this->config->text = file_rewrite_pluginfile_urls(
                 $this->config->text,
                 'pluginfile.php',
@@ -80,7 +80,6 @@ class metadata_status implements renderable, templatable {
                 null
             );
         } else {
-            /** TODO Improve admin HTML Editor */
             $this->config->text = get_config('block_metadata_status', 'config_text_admin');
         }
 
@@ -89,6 +88,7 @@ class metadata_status implements renderable, templatable {
             $format = $this->config->format;
         }
 
+        $data->hasText = $this->config->text !== null && $this->config->text !== '' && strlen($this->config->text) > 0;
         $data->text = format_text($this->config->text, $format, $filteropt);
 
         return $data;

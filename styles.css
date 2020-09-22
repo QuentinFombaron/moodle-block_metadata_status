@@ -35,7 +35,6 @@
     text-align: justify;
 }
 .block_metadata_status td.content .number {
-    display: inline-table;
     font-weight: bold;
     font-size: xx-large;
 }
