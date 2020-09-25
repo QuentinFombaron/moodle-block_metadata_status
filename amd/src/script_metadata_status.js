@@ -22,10 +22,10 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
                         'border-color': moduleStatus.options.progressBarBackgroundColor
                     });
                     $('.block_metadata_status_shared_icon.disabled').css({
-                        'fill': moduleStatus.options.progressBarColorBeforeThreshold,
+                        'fill': moduleStatus.options.progressBarColorBeforeThreshold
                     });
                     $('.block_metadata_status_shared_icon.enabled').css({
-                        'fill': moduleStatus.options.progressBarColorAfterThreshold,
+                        'fill': moduleStatus.options.progressBarColorAfterThreshold
                     });
                 });
 
@@ -52,17 +52,17 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
                  * } moduleStatus
                  */
                 function injectHTML(moduleStatus) {
-                    for (const module of moduleStatus.modules) {
+                    moduleStatus.modules.forEach((module) => {
                         $('#module-' + module.id + ' .activityinstance')
                             .append(
                                 getHTML(module.status.percentage, module.status.shared, moduleStatus.options.enablePercentageLabel)
-                        );
+                            );
                         $('#module-' + module.id + ' .block_metadata_status_progress_bar').css({
                             'background-color': (module.status.percentage < (moduleStatus.options.progressBarThreshold * 10)) ?
                                 moduleStatus.options.progressBarColorBeforeThreshold :
                                 moduleStatus.options.progressBarColorAfterThreshold
                         });
-                    }
+                    });
                 }
 
                 /**
