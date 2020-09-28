@@ -24,17 +24,13 @@ class block_metadata_status_edit_form extends block_edit_form {
         $mform->addElement(
             'editor',
             'config_text',
-            get_string('contentinputlabel', 'block_metadata_status'),
-            null,
+            get_string('config_block_content', 'block_metadata_status'),
+            get_string('config_block_content_desc', 'block_metadata_status'),
             $editoroptions
         );
         $mform->setType('config_text', PARAM_RAW);
 
-        $mform->addHelpButton(
-            'config_text',
-            'howto_text',
-            'block_metadata_status'
-        );
+        $mform->addHelpButton('config_text', 'howto_text', 'block_metadata_status');
     }
 
     /**
