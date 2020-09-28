@@ -171,20 +171,17 @@ function block_metadata_status_get_metadata_status($courseId)
 
     $modules = $DB->get_records('course_modules', array('course' => $courseId), null, 'id');
 
-    /** TODO Improve checkbox filter */
     $sql = 'SELECT id, shortname, datatype, defaultdata
             FROM {local_metadata_field}
-            WHERE contextlevel = :contextlevel';
+            WHERE contextlevel = :contextlevel AND datatype != :datatype';
 
-    $params = ['contextlevel' => 70];
+    $params = ['contextlevel' => 70, 'datatype' => 'checkbox'];
 
     $moduleMetadataFields = $DB->get_records_sql($sql, $params);
 
     $moduleMetadataFieldIdsTracked = [];
     foreach ($moduleMetadataFields as $moduleMetadataField) {
-        if ($moduleMetadataField->datatype !== 'checkbox'
-            && get_config('block_metadata_status', 'enable_metadata_' . $moduleMetadataField->id . '_tracking')
-        ) {
+        if (get_config('block_metadata_status', 'enable_metadata_' . $moduleMetadataField->id . '_tracking')) {
             array_push($moduleMetadataFieldIdsTracked, $moduleMetadataField->id);
         }
     }
