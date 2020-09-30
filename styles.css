@@ -1,7 +1,7 @@
 .block_metadata_status_container {
+    width: 120px;
     height: 20px;
-    top: 10%;
-    right: 20%;
+    right: 110%;
 }
 .block_metadata_status_shared_icon {
     width: 14px;
@@ -40,6 +40,7 @@
 .block_metadata_status td.content .text-container {
     display: inline-table;
     font-weight: bold;
+    font-size: 65%;
     background-color: #1077d2;
     color: white;
 }

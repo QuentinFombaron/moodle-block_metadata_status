@@ -53,8 +53,8 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
                  */
                 function injectHTML(moduleStatus) {
                     moduleStatus.modules.forEach((module) => {
-                        $('#module-' + module.id + ' .activityinstance')
-                            .append(
+                        $('#module-' + module.id + ' .actions')
+                            .prepend(
                                 getHTML(module.status.percentage, module.status.shared, moduleStatus.options.enablePercentageLabel)
                             );
                         $('#module-' + module.id + ' .block_metadata_status_progress_bar').css({
@@ -86,10 +86,10 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
                                     <path d="M 4.285156 6.71875 C 4.082031 6.71875 3.882812 6.613281 3.777344 6.425781 C 3.617188 6.144531 3.714844 5.789062 3.996094 5.628906 L 9.40625 2.542969 C 9.6875 2.382812 10.042969 2.480469 10.203125 2.761719 C 10.363281 3.042969 10.265625 3.398438 9.984375 3.558594 L 4.574219 6.644531 C 4.480469 6.695312 4.382812 6.71875 4.285156 6.71875 Z M 4.285156 6.71875 " />
                                     <path d="M 9.695312 11.53125 C 9.597656 11.53125 9.5 11.507812 9.410156 11.457031 L 3.996094 8.371094 C 3.714844 8.210938 3.617188 7.855469 3.777344 7.574219 C 3.9375 7.292969 4.292969 7.195312 4.574219 7.355469 L 9.988281 10.441406 C 10.265625 10.601562 10.363281 10.957031 10.203125 11.238281 C 10.097656 11.425781 9.898438 11.53125 9.695312 11.53125 Z M 9.695312 11.53125 " />
                                 </svg>
-                                <div class="block_metadata_status_progress align-middle">
+                                <div class="block_metadata_status_progress d-inline-block align-middle">
                                   <div class="block_metadata_status_progress_bar h-100 float-left" style="width:` + percentage + `%;"></div>
                                 </div>` +
-                                (enablePercentageLabel ? `<div class="block_metadata_status_pourcentage align-middle ml-1">` + percentage + `%</div>` : ``) +
+                                (enablePercentageLabel ? `<div class="block_metadata_status_pourcentage d-inline-block align-middle ml-1">` + percentage + `%</div>` : ``) +
                         `</div>`;
                     /* eslint-enable max-len */
                 }

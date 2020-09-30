@@ -106,7 +106,7 @@ function block_metadata_status_get_shared_modules_length() {
  *
  * @return int
  *
- * @throws dml_exception
+ * @throws dml_exception|ddl_exception
  */
 function block_metadata_status_get_filled_modules_length($courseId) {
 
@@ -174,12 +174,16 @@ function block_metadata_status_get_metadata_status($courseId)
 {
     global $DB;
 
-    $modules = $DB->get_records('course_modules', array('course' => $courseId), null, 'id');
+    // $modules = $DB->get_records('course_modules', array('course' => $courseId), null, 'id');
+
+    $modules = $DB->get_records_sql(
+        'SELECT id FROM {course_modules} WHERE course = :courseid AND module != :moduleid',
+        ['courseid' => $courseId, 'moduleid' => 12]
+    );
 
     $sql = 'SELECT id, shortname, datatype, defaultdata
             FROM {local_metadata_field}
             WHERE contextlevel = :contextlevel AND datatype != :datatype';
-
     $params = ['contextlevel' => 70, 'datatype' => 'checkbox'];
 
     $moduleMetadataFields = $DB->get_records_sql($sql, $params);
