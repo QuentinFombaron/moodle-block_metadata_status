@@ -195,7 +195,6 @@ function block_metadata_status_get_metadata_status($courseId)
                 unset($moduleMetadataFields[$index]);
             }
         }
-        $moduleMetadataFields = array_values($moduleMetadataFields);
     }
 
     $moduleMetadataFieldIdsTracked = [];
