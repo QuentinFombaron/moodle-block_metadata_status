@@ -191,7 +191,7 @@ function block_metadata_status_get_metadata_status($courseId)
     if ($DB->get_manager()->table_exists('local_sharedspaceh_teams')) {
         $teams = $DB->get_records_menu('local_sharedspaceh_teams', null, 'teamname ASC', 'id, capabilityid');
         foreach ($moduleMetadataFields as $index => $moduleMetadataField) {
-            if (!h_has_capability_to_see_fieldid($moduleMetadataField->id, $teams, context_course::instance($courseId))) {
+            if (!h_has_capability_to_see_fieldid($moduleMetadataField->id, $teams, context_system::instance())) {
                 unset($moduleMetadataFields[$index]);
             }
         }
