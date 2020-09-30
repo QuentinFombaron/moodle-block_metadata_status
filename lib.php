@@ -2,6 +2,11 @@
 
 use core\session\manager;
 
+if (file_exists($CFG->dirroot . '/local/sharedspaceh/spacelib.php')) {
+    require_once($CFG->dirroot . '/local/sharedspaceh/spacelib.php');
+}
+
+
 defined('MOODLE_INTERNAL') || die;
 
 const DEFAULT_METADATA_STATUS_ENABLE_METADATA_TRACKING = 1;
@@ -163,7 +168,7 @@ function block_metadata_status_get_tracked_metadata_length() {
  *
  * @return stdClass
  *
- * @throws dml_exception
+ * @throws dml_exception|ddl_exception
  */
 function block_metadata_status_get_metadata_status($courseId)
 {
@@ -178,6 +183,16 @@ function block_metadata_status_get_metadata_status($courseId)
     $params = ['contextlevel' => 70, 'datatype' => 'checkbox'];
 
     $moduleMetadataFields = $DB->get_records_sql($sql, $params);
+
+    if ($DB->get_manager()->table_exists('local_sharedspaceh_teams')) {
+        $teams = $DB->get_records_menu('local_sharedspaceh_teams', null, 'teamname ASC', 'id, capabilityid');
+        foreach ($moduleMetadataFields as $index => $moduleMetadataField) {
+            if (!h_has_capability_to_see_fieldid($moduleMetadataField->id, $teams, context_course::instance($courseId))) {
+                unset($moduleMetadataFields[$index]);
+            }
+        }
+        $moduleMetadataFields = array_values($moduleMetadataFields);
+    }
 
     $moduleMetadataFieldIdsTracked = [];
     foreach ($moduleMetadataFields as $moduleMetadataField) {

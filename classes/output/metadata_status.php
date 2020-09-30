@@ -80,6 +80,7 @@ class metadata_status implements renderable, templatable {
                 null
             );
         } else {
+            $this->config = new stdClass();
             $this->config->text = get_config('block_metadata_status', 'config_text_admin');
         }
 
