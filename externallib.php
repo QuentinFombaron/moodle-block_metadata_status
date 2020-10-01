@@ -29,6 +29,7 @@ class block_metadata_status_external extends external_api {
      *
      * @throws dml_exception
      * @throws invalid_parameter_exception
+     * @throws ddl_exception
      */
     public static function get_modules_status($courseId) {
         self::validate_parameters(self::get_modules_status_parameters(), array(
@@ -36,7 +37,7 @@ class block_metadata_status_external extends external_api {
             )
         );
 
-        return block_metadata_status_get_metadata_status($courseId);
+        return block_metadata_status_get_metadata_status($courseId, context_system::instance());
     }
 
     /**

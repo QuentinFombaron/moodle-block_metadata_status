@@ -165,12 +165,14 @@ function block_metadata_status_get_tracked_metadata_length() {
 
 /**
  * @param string $courseId
+ * @param null $systemContext
  *
  * @return stdClass
  *
- * @throws dml_exception|ddl_exception
+ * @throws ddl_exception
+ * @throws dml_exception
  */
-function block_metadata_status_get_metadata_status($courseId)
+function block_metadata_status_get_metadata_status($courseId, $systemContext = null)
 {
     global $DB;
 
@@ -188,10 +190,10 @@ function block_metadata_status_get_metadata_status($courseId)
 
     $moduleMetadataFields = $DB->get_records_sql($sql, $params);
 
-    if ($DB->get_manager()->table_exists('local_sharedspaceh_teams')) {
+    if ($DB->get_manager()->table_exists('local_sharedspaceh_teams') && !is_null($systemContext)) {
         $teams = $DB->get_records_menu('local_sharedspaceh_teams', null, 'teamname ASC', 'id, capabilityid');
         foreach ($moduleMetadataFields as $index => $moduleMetadataField) {
-            if (!h_has_capability_to_see_fieldid($moduleMetadataField->id, $teams, context_system::instance())) {
+            if (!h_has_capability_to_see_fieldid($moduleMetadataField->id, $teams, $systemContext)) {
                 unset($moduleMetadataFields[$index]);
             }
         }
