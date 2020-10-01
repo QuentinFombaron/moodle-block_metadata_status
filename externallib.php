@@ -37,7 +37,7 @@ class block_metadata_status_external extends external_api {
             )
         );
 
-        return block_metadata_status_get_metadata_status($courseId, context_system::instance());
+        return block_metadata_status_get_metadata_status($courseId, context_course::instance($courseId));
     }
 
     /**
