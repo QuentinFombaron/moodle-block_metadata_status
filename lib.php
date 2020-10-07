@@ -232,9 +232,6 @@ function block_metadata_status_get_metadata_status($courseId, $context = null)
 
     $sets->close();
 
-    var_dump($moduleMetadata);
-    die();
-
     $metadataStatus = new stdClass();
 
     $metadataStatus->modules = [];
