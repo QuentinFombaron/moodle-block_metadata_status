@@ -172,7 +172,7 @@ function block_metadata_status_get_tracked_metadata_length() {
  * @throws ddl_exception
  * @throws dml_exception
  */
-function block_metadata_status_get_metadata_status($courseId, $systemContext = null)
+function block_metadata_status_get_metadata_status($courseId, $context = null)
 {
     global $DB;
 
@@ -190,10 +190,10 @@ function block_metadata_status_get_metadata_status($courseId, $systemContext = n
 
     $moduleMetadataFields = $DB->get_records_sql($sql, $params);
 
-    if ($DB->get_manager()->table_exists('local_sharedspaceh_teams') && !is_null($systemContext)) {
+    if ($DB->get_manager()->table_exists('local_sharedspaceh_teams') && !is_null($context)) {
         $teams = $DB->get_records_menu('local_sharedspaceh_teams', null, 'teamname ASC', 'id, capabilityid');
         foreach ($moduleMetadataFields as $index => $moduleMetadataField) {
-            if (!h_has_capability_to_see_fieldid($moduleMetadataField->id, $teams, $systemContext)) {
+            if (!h_has_capability_to_see_fieldid($moduleMetadataField->id, $teams, $context)) {
                 unset($moduleMetadataFields[$index]);
             }
         }
@@ -231,6 +231,9 @@ function block_metadata_status_get_metadata_status($courseId, $systemContext = n
     }
 
     $sets->close();
+
+    var_dump($moduleMetadata);
+    die();
 
     $metadataStatus = new stdClass();
 
