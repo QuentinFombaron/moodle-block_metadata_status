@@ -112,7 +112,7 @@ function block_metadata_status_get_filled_modules_length() {
 
     $modulesFilled = array_values(
         array_filter(
-            $metadataStatus,
+            json_decode(json_encode($metadataStatus), TRUE),
             function($item) {
                 return $item['status']['percentage'] === 100;
             }
@@ -164,13 +164,14 @@ function block_metadata_status_get_tracked_metadata_length() {
 /**
  * @param null $courseId
  * @param null $context
+ * @param bool $debug
  *
  * @return stdClass
  *
  * @throws ddl_exception
  * @throws dml_exception
  */
-function block_metadata_status_get_metadata_status($courseId = null, $context = null)
+function block_metadata_status_get_metadata_status($courseId = null, $context = null, $debug = false)
 {
     global $DB, $COURSE;
 
@@ -244,12 +245,17 @@ function block_metadata_status_get_metadata_status($courseId = null, $context = 
 
     foreach ($modules as $module) {
         $moduleMetadataFieldsFilledLength = 0;
+        if($debug) {
+            $moduleMetadataFieldsNotFilledLength = 0;
+            $moduleMetadataFieldsFilled = [];
+            $moduleMetadataFieldsNotFilled = [];
+        }
         foreach ($moduleMetadataFieldIdsTracked as $moduleMetadataFieldIdTracked) {
             $metadata = array_values(
                 array_filter(
                     $moduleMetadata,
                     function ($item) use ($module, $moduleMetadataFieldIdTracked) {
-                        return $item['instanceid'] == $module->id && $item['fieldid'] == $moduleMetadataFieldIdTracked;
+                        return strcmp($item['instanceid'], $module->id) === 0 && strcmp($item['fieldid'], $moduleMetadataFieldIdTracked) === 0;
                     }
                 )
             );
@@ -266,8 +272,18 @@ function block_metadata_status_get_metadata_status($courseId = null, $context = 
                     )
                 )[0]->defaultdata;
 
+                if ($debug) {
+                    $metadata['defaultdata'] = $defaultValue;
+                }
+
                 if ($metadata && $metadata['data'] !== '' && $metadata['data'] !== $defaultValue) {
                     $moduleMetadataFieldsFilledLength++;
+                    if ($debug) {
+                        array_push($moduleMetadataFieldsFilled, $metadata);
+                    }
+                } else if ($debug) {
+                    $moduleMetadataFieldsNotFilledLength++;
+                    array_push($moduleMetadataFieldsNotFilled, $metadata);
                 }
             }
         }
@@ -287,7 +303,19 @@ function block_metadata_status_get_metadata_status($courseId = null, $context = 
             $shared = false;
         }
 
-        $metadataStatus->modules[] = ['id' => $module->id, 'status' => ['percentage' => $percentage, 'shared' => $shared]];
+        $moduleMetadataItem = new stdClass();
+        $moduleMetadataItem->id = $module->id;
+        $moduleMetadataItem->status = (object)['percentage' => $percentage, 'shared' => $shared];
+
+        if ($debug) {
+            $moduleMetadataItem->fieldsFilled = $moduleMetadataFieldsFilled;
+            $moduleMetadataItem->fieldsFilledLength = $moduleMetadataFieldsFilledLength;
+            $moduleMetadataItem->fieldsNotFilled = $moduleMetadataFieldsNotFilled;
+            $moduleMetadataItem->fieldsNotFilledLength = $moduleMetadataFieldsNotFilledLength;
+            $moduleMetadataItem->fieldsTrackedLength = $moduleMetadataFieldIdsTrackedLength;
+        }
+
+        $metadataStatus->modules[] = $moduleMetadataItem;
     }
 
     $metadataStatus->options = new stdClass();

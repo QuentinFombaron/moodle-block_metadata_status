@@ -55,7 +55,7 @@ class block_metadata_status_external extends external_api {
             )
         );
 
-        return block_metadata_status_get_metadata_status($courseId, $context);
+        return block_metadata_status_get_metadata_status($courseId, $context, true);
     }
 
     /**
@@ -69,13 +69,36 @@ class block_metadata_status_external extends external_api {
                 'modules' => new external_multiple_structure(
                     new external_single_structure(
                         array(
-                            'id' => new external_value(PARAM_INT, 'Module ID'),
+                            'id' => new external_value(PARAM_INT, 'Module ID', VALUE_REQUIRED),
                             'status' => new external_single_structure(
                                 array(
-                                    'percentage' => new external_value(PARAM_INT, 'Percentage of metadata filling'),
-                                    'shared' => new external_value(PARAM_BOOL, 'Is module shared')
+                                    'percentage' => new external_value(PARAM_INT, 'Percentage of metadata filling', VALUE_REQUIRED),
+                                    'shared' => new external_value(PARAM_BOOL, 'Is module shared', VALUE_REQUIRED)
                                 )
-                            )
+                            ),
+                            'fieldsFilled' => new external_multiple_structure(
+                                new external_single_structure(
+                                    array(
+                                        'instanceid' => new external_value(PARAM_INT, 'Metadata module ID', VALUE_OPTIONAL),
+                                        'fieldid' => new external_value(PARAM_INT, 'Metadata field ID', VALUE_OPTIONAL),
+                                        'data' => new external_value(PARAM_RAW, 'Metadata data', VALUE_OPTIONAL),
+                                        'defaultdata' => new external_value(PARAM_RAW, 'Metadata field default value', VALUE_OPTIONAL)
+                                    )
+                                )
+                            ),
+                            'fieldsFilledLength' => new external_value(PARAM_INT, 'Module filled fields length', VALUE_OPTIONAL),
+                            'fieldsNotFilled' => new external_multiple_structure(
+                                new external_single_structure(
+                                    array(
+                                        'instanceid' => new external_value(PARAM_INT, 'Metadata module ID', VALUE_OPTIONAL),
+                                        'fieldid' => new external_value(PARAM_INT, 'Metadata field ID', VALUE_OPTIONAL),
+                                        'data' => new external_value(PARAM_RAW, 'Metadata data', VALUE_OPTIONAL),
+                                        'defaultdata' => new external_value(PARAM_RAW, 'Metadata field default value', VALUE_OPTIONAL)
+                                    )
+                                )
+                            ),
+                            'fieldsNotFilledLength' => new external_value(PARAM_INT, 'Module not filled fields length', VALUE_OPTIONAL),
+                            'fieldsTrackedLength' => new external_value(PARAM_INT, 'Metadata fields tracked length', VALUE_OPTIONAL)
                         )
                     )
                 ),
