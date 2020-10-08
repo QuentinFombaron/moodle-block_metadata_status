@@ -52,7 +52,7 @@ class metadata_status implements renderable, templatable {
         $data->sharedModules = block_metadata_status_get_shared_modules_length();
         $data->sharedModulesText = mb_strtoupper(get_string('shared_modules', 'block_metadata_status'));
 
-        $data->filledModules = block_metadata_status_get_filled_modules_length($COURSE->id);
+        $data->filledModules = block_metadata_status_get_filled_modules_length();
         $data->filledModulesText = mb_strtoupper(get_string('filled_modules', 'block_metadata_status'));
 
         $data->existingMetadata = block_metadata_status_get_metadata_length();

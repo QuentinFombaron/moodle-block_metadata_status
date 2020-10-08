@@ -102,21 +102,19 @@ function block_metadata_status_get_shared_modules_length() {
 }
 
 /**
- * @param string $courseId
- *
  * @return int
  *
  * @throws dml_exception|ddl_exception
  */
-function block_metadata_status_get_filled_modules_length($courseId) {
+function block_metadata_status_get_filled_modules_length() {
 
-    $metadataStatus = block_metadata_status_get_metadata_status($courseId)->modules;
+    $metadataStatus = block_metadata_status_get_metadata_status()->modules;
 
     $modulesFilled = array_values(
         array_filter(
             $metadataStatus,
             function($item) {
-                return $item['status']['percentage'] == 100;
+                return $item['status']['percentage'] === 100;
             }
         )
     );
@@ -164,17 +162,24 @@ function block_metadata_status_get_tracked_metadata_length() {
 }
 
 /**
- * @param string $courseId
- * @param null $systemContext
+ * @param null $courseId
+ * @param null $context
  *
  * @return stdClass
  *
  * @throws ddl_exception
  * @throws dml_exception
  */
-function block_metadata_status_get_metadata_status($courseId, $context = null)
+function block_metadata_status_get_metadata_status($courseId = null, $context = null)
 {
-    global $DB;
+    global $DB, $COURSE;
+
+    if (is_null($courseId)) {
+        $courseId = $COURSE->id;
+    }
+    if (is_null($context)) {
+        $context = context_course::instance($courseId);
+    }
 
     // $modules = $DB->get_records('course_modules', array('course' => $courseId), null, 'id');
 
@@ -213,9 +218,10 @@ function block_metadata_status_get_metadata_status($courseId, $context = null)
     $moduleIds = array_map(function ($item) {
         return $item->id;
     }, $modules);
+
     $sql = 'SELECT instanceid, fieldid, data
             FROM {local_metadata}
-            WHERE instanceid = :module' . join(' OR instanceid = :module', $moduleIds);
+            WHERE instanceid = :module' . join(' OR instanceid = :module', $moduleIds) . ';';
 
     $params = [];
 
@@ -270,7 +276,7 @@ function block_metadata_status_get_metadata_status($courseId, $context = null)
             array_filter(
                 $moduleMetadata,
                 function ($item) use ($module, $sharedMetadataId) {
-                    return $item['instanceid'] == $module->id && $item['fieldid'] == $sharedMetadataId;
+                    return strcmp($item['instanceid'], $module->id) === 0 && strcmp($item['fieldid'], $sharedMetadataId) === 0;
                 }
             )
         );

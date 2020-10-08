@@ -3,18 +3,23 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
         init: (params) => {
             $(() => {
                 const courseId = params.courseId;
+                const context = params.context;
 
                 const promises = ajax.call([
                     {
                         methodname: 'block_metadata_status_get_modules_status',
                         args: {
                             courseId: courseId,
+                            context: context
                         },
                         fail: notification.exception
                     }
                 ]);
 
                 $.when(promises[0]).done((moduleStatus) => {
+                    // eslint-disable-next-line no-console
+                    console.log(moduleStatus);
+
                     injectHTML(moduleStatus);
 
                     $('.block_metadata_status_progress').css({

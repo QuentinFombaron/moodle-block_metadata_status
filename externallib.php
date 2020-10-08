@@ -15,29 +15,47 @@ class block_metadata_status_external extends external_api {
     public static function get_modules_status_parameters() {
         return new external_function_parameters(
             array(
-                'courseId' => new external_value(PARAM_INT, 'ID of course', VALUE_REQUIRED),
+                'courseId' => new external_value(PARAM_INT, 'Course ID', VALUE_REQUIRED),
+                'context' => self::get_context_parameters()
             )
         );
+    }
+
+    /**
+     * Returns a prepared structure to use a context parameters.
+     * @return external_single_structure
+     */
+    protected static function get_context_parameters() {
+        return new external_single_structure(array(
+            'id' => new external_value(PARAM_INT, 'Context ID. Either use this value, or level and instanceid.', VALUE_DEFAULT, 0),
+            'contextlevel' => new external_value(PARAM_INT, 'Context level. To be used with instanceid.', VALUE_DEFAULT, 0),
+            'instanceid' => new external_value(PARAM_TEXT, 'Context instance ID. To be used with level', VALUE_DEFAULT, ''),
+            'path' => new external_value(PARAM_TEXT, 'Context path.', VALUE_DEFAULT, ''),
+            'depth' => new external_value(PARAM_TEXT, 'Context depth.', VALUE_DEFAULT, ''),
+            'locked' => new external_value(PARAM_TEXT, 'Context locked.', VALUE_DEFAULT, '')
+        ));
     }
 
     /**
      * Get course module IDs
      *
      * @param int $courseId
+     * @param stdClass $context
      *
      * @return stdClass Modules IDs
      *
+     * @throws ddl_exception
      * @throws dml_exception
      * @throws invalid_parameter_exception
-     * @throws ddl_exception
      */
-    public static function get_modules_status($courseId) {
+    public static function get_modules_status($courseId, $context) {
         self::validate_parameters(self::get_modules_status_parameters(), array(
-                'courseId' => $courseId
+                'courseId' => $courseId,
+                'context' => $context
             )
         );
 
-        return block_metadata_status_get_metadata_status($courseId, context_course::instance($courseId));
+        return block_metadata_status_get_metadata_status($courseId, $context);
     }
 
     /**
