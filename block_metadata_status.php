@@ -86,7 +86,7 @@ class block_metadata_status extends block_base {
         $this->content->footer = '';
 
         if ($this->page->user_is_editing()) {
-            $params = [['courseId' => $COURSE->id]];
+            $params = [['courseId' => $COURSE->id, 'context' => context_course::instance($COURSE->id)]];
 
             $this->page->requires->js_call_amd('block_metadata_status/script_metadata_status', 'init', $params);
         }

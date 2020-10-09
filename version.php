@@ -2,7 +2,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_metadata_status';
-$plugin->version = 2020093000;
+$plugin->version = 2020100900;
 $plugin->requires = 2018120300;
 
 $plugin->release = 'v1.0.0';

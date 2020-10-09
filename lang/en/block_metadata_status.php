@@ -18,7 +18,9 @@ $string['config_shared_metadata'] = 'Shared metadata short name';
 $string['config_shared_metadata_desc'] = '';
 $string['config_enable_percentage'] = 'Enable percentage label';
 $string['config_enable_percentage_desc'] = '';
-$string['config_block_content'] = 'Block Content';
+$string['config_disable_block_content'] = 'Disable block content';
+$string['config_disable_block_content_desc'] = '';
+$string['config_block_content'] = 'Block content';
 $string['config_block_content_desc'] = '';
 $string['config_block_content_default'] = '<p dir="ltr"><img src="https://i.imgur.com/cnjYDcH.png" alt="Metadata Status logo" width="300" height="169" class="img-responsive atto_image_button_middle"></p>
 <p dir="ltr"><span style="font-size: 0.9375rem; font-family: apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;;"><strong>Metadata Status</strong> tracks <a href="https://moodle.org/plugins/local_metadata" target="_blank">Metadata</a> plugin metadata.</span></p>
@@ -39,5 +41,7 @@ $string['config_progress_bar_color_before_threshold_desc'] = '';
 $string['config_progress_bar_color_after_threshold'] = 'Progress bar color after threshold';
 $string['config_progress_bar_color_after_threshold_desc'] = '';
 
-$string['howto_text'] = 'Text visible in the block';
+$string['howto_text'] = 'text visible in the block';
 $string['howto_text_help'] = 'This field provides the visible text in the block';
+$string['howto_disable_text'] = 'disable text in the block';
+$string['howto_disable_text_help'] = 'This field disable the visible text in the block';

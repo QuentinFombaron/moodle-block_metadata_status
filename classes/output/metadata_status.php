@@ -12,6 +12,7 @@ use coding_exception;
 use context;
 use context_block;
 use context_course;
+use ddl_exception;
 use dml_exception;
 use renderable;
 use renderer_base;
@@ -43,6 +44,7 @@ class metadata_status implements renderable, templatable {
      *
      * @throws coding_exception
      * @throws dml_exception
+     * @throws ddl_exception
      */
     public function export_for_template(renderer_base $output) {
         global $COURSE, $DB;
@@ -52,7 +54,7 @@ class metadata_status implements renderable, templatable {
         $data->sharedModules = block_metadata_status_get_shared_modules_length();
         $data->sharedModulesText = mb_strtoupper(get_string('shared_modules', 'block_metadata_status'));
 
-        $data->filledModules = block_metadata_status_get_filled_modules_length($COURSE->id);
+        $data->filledModules = block_metadata_status_get_filled_modules_length();
         $data->filledModulesText = mb_strtoupper(get_string('filled_modules', 'block_metadata_status'));
 
         $data->existingMetadata = block_metadata_status_get_metadata_length();
@@ -69,6 +71,8 @@ class metadata_status implements renderable, templatable {
         $coursecontext = context_course::instance($COURSE->id);
         $blockid = $DB->get_field('block_instances', 'id', ['blockname' => 'metadata_status', 'parentcontextid' => $coursecontext->id]);
         $context = context_block::instance($blockid);
+
+        $data->enableText = isset($this->config->disable_text) && !($this->config->disable_text === '1');
 
         if (isset($this->config->text) && $this->config->text !== null && $this->config->text !== '' && strlen($this->config->text) > 0) {
             $this->config->text = file_rewrite_pluginfile_urls(
@@ -89,7 +93,6 @@ class metadata_status implements renderable, templatable {
             $format = $this->config->format;
         }
 
-        $data->hasText = $this->config->text !== null && $this->config->text !== '' && strlen($this->config->text) > 0;
         $data->text = format_text($this->config->text, $format, $filteropt);
 
         return $data;

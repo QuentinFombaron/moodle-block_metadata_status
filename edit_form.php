@@ -20,6 +20,17 @@ class block_metadata_status_edit_form extends block_edit_form {
         // Section header title according to language file.
         $mform->addElement('header', 'config_header', get_string('blocksettings', 'block'));
 
+        $mform->addElement(
+            'advcheckbox',
+            'config_disable_text',
+            get_string('config_disable_block_content', 'block_metadata_status'),
+            get_string('config_disable_block_content_desc', 'block_metadata_status'),
+            array(),
+            array(0, 1)
+        );
+
+        $mform->addHelpButton('config_disable_text', 'howto_disable_text', 'block_metadata_status');
+
         $editoroptions = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'noclean' => true, 'context' => $this->block->context);
         $mform->addElement(
             'editor',
@@ -31,6 +42,12 @@ class block_metadata_status_edit_form extends block_edit_form {
         $mform->setType('config_text', PARAM_RAW);
 
         $mform->addHelpButton('config_text', 'howto_text', 'block_metadata_status');
+
+        $mform->disabledIf(
+            'config_text',
+            'config_disable_text',
+            'checked'
+        );
     }
 
     /**
@@ -39,6 +56,7 @@ class block_metadata_status_edit_form extends block_edit_form {
      * @param {array} $defaults
      */
     public function set_data($defaults) {
+        $text = '';
         if (!empty($this->block->config) && is_object($this->block->config)) {
             $text = $this->block->config->text;
             $draftideditor = file_get_submitted_draft_itemid('config_text');
