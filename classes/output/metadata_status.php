@@ -72,7 +72,7 @@ class metadata_status implements renderable, templatable {
         $blockid = $DB->get_field('block_instances', 'id', ['blockname' => 'metadata_status', 'parentcontextid' => $coursecontext->id]);
         $context = context_block::instance($blockid);
 
-        $data->enableText = isset($this->config->disable_text) && !($this->config->disable_text === '1');
+        $data->enableText = !(isset($this->config->disable_text) && ($this->config->disable_text === '1'));
 
         if (isset($this->config->text) && $this->config->text !== null && $this->config->text !== '' && strlen($this->config->text) > 0) {
             $this->config->text = file_rewrite_pluginfile_urls(
