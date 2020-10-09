@@ -55,7 +55,7 @@ class block_metadata_status_external extends external_api {
             )
         );
 
-        return block_metadata_status_get_metadata_status($courseId, $context, true);
+        return block_metadata_status_get_metadata_status($courseId, $context);
     }
 
     /**
@@ -79,26 +79,26 @@ class block_metadata_status_external extends external_api {
                             'fieldsFilled' => new external_multiple_structure(
                                 new external_single_structure(
                                     array(
-                                        'instanceid' => new external_value(PARAM_INT, 'Metadata module ID', VALUE_OPTIONAL),
-                                        'fieldid' => new external_value(PARAM_INT, 'Metadata field ID', VALUE_OPTIONAL),
-                                        'data' => new external_value(PARAM_RAW, 'Metadata data', VALUE_OPTIONAL),
-                                        'defaultdata' => new external_value(PARAM_RAW, 'Metadata field default value', VALUE_OPTIONAL)
+                                        'instanceid' => new external_value(PARAM_INT, 'Metadata module ID (DEBUG)'),
+                                        'fieldid' => new external_value(PARAM_INT, 'Metadata field ID (DEBUG)'),
+                                        'data' => new external_value(PARAM_RAW, 'Metadata data (DEBUG)'),
+                                        'defaultdata' => new external_value(PARAM_RAW, 'Metadata field default value (DEBUG)')
                                     )
-                                )
+                                ), 'Module filled metadata (DEBUG)', VALUE_OPTIONAL
                             ),
-                            'fieldsFilledLength' => new external_value(PARAM_INT, 'Module filled fields length', VALUE_OPTIONAL),
+                            'fieldsFilledLength' => new external_value(PARAM_INT, 'Module filled fields length (DEBUG)', VALUE_OPTIONAL),
                             'fieldsNotFilled' => new external_multiple_structure(
                                 new external_single_structure(
                                     array(
-                                        'instanceid' => new external_value(PARAM_INT, 'Metadata module ID', VALUE_OPTIONAL),
-                                        'fieldid' => new external_value(PARAM_INT, 'Metadata field ID', VALUE_OPTIONAL),
-                                        'data' => new external_value(PARAM_RAW, 'Metadata data', VALUE_OPTIONAL),
-                                        'defaultdata' => new external_value(PARAM_RAW, 'Metadata field default value', VALUE_OPTIONAL)
+                                        'instanceid' => new external_value(PARAM_INT, 'Metadata module ID (DEBUG)', VALUE_OPTIONAL),
+                                        'fieldid' => new external_value(PARAM_INT, 'Metadata field ID (DEBUG)', VALUE_OPTIONAL),
+                                        'data' => new external_value(PARAM_RAW, 'Metadata data (DEBUG)', VALUE_OPTIONAL),
+                                        'defaultdata' => new external_value(PARAM_RAW, 'Metadata field default value (DEBUG)', VALUE_OPTIONAL)
                                     )
-                                )
+                                ), 'Module not filled metadata (DEBUG)', VALUE_OPTIONAL
                             ),
-                            'fieldsNotFilledLength' => new external_value(PARAM_INT, 'Module not filled fields length', VALUE_OPTIONAL),
-                            'fieldsTrackedLength' => new external_value(PARAM_INT, 'Metadata fields tracked length', VALUE_OPTIONAL)
+                            'fieldsNotFilledLength' => new external_value(PARAM_INT, 'Module not filled fields length (DEBUG)', VALUE_OPTIONAL),
+                            'fieldsTrackedLength' => new external_value(PARAM_INT, 'Metadata fields tracked length (DEBUG)', VALUE_OPTIONAL)
                         )
                     )
                 ),

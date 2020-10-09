@@ -20,6 +20,8 @@ $string['config_shared_metadata'] = 'Nom abrégé de la métadonnée de partage'
 $string['config_shared_metadata_desc'] = '';
 $string['config_enable_percentage'] = 'Activer l\'étiquette de pourcentage';
 $string['config_enable_percentage_desc'] = '';
+$string['config_disable_block_content'] = 'Désactiver le contenu du bloc';
+$string['config_disable_block_content_desc'] = '';
 $string['config_block_content'] = 'Contenu du bloc';
 $string['config_block_content_desc'] = '';
 $string['config_block_content_default'] = '<p dir="ltr"><img src="https://i.imgur.com/cnjYDcH.png" alt="Metadata Status logo" width="300" height="169" class="img-responsive atto_image_button_middle"></p>
@@ -41,5 +43,7 @@ $string['config_progress_bar_color_before_threshold_desc'] = '';
 $string['config_progress_bar_color_after_threshold'] = 'Couleur de la barre de progression après le seuil';
 $string['config_progress_bar_color_after_threshold_desc'] = '';
 
-$string['howto_text'] = "Texte visible dans le bloc";
-$string['howto_text_help'] = "Ce champs renseigne le texte visible dans le bloc";
+$string['howto_text'] = 'Texte visible dans le bloc';
+$string['howto_text_help'] = 'Ce champs renseigne le texte visible dans le bloc';
+$string['howto_disable_text'] = 'désactiver le texte visible dans le bloc';
+$string['howto_disable_text_help'] = 'Ce champs désactive le texte visible dans le bloc';

@@ -17,9 +17,6 @@ define(['jquery', 'core/ajax', 'core/notification'], ($, ajax, notification) => 
                 ]);
 
                 $.when(promises[0]).done((moduleStatus) => {
-                    // eslint-disable-next-line no-console
-                    console.log(moduleStatus);
-
                     injectHTML(moduleStatus);
 
                     $('.block_metadata_status_progress').css({

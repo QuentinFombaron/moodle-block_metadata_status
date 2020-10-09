@@ -12,6 +12,7 @@ use coding_exception;
 use context;
 use context_block;
 use context_course;
+use ddl_exception;
 use dml_exception;
 use renderable;
 use renderer_base;
@@ -43,6 +44,7 @@ class metadata_status implements renderable, templatable {
      *
      * @throws coding_exception
      * @throws dml_exception
+     * @throws ddl_exception
      */
     public function export_for_template(renderer_base $output) {
         global $COURSE, $DB;
@@ -70,6 +72,8 @@ class metadata_status implements renderable, templatable {
         $blockid = $DB->get_field('block_instances', 'id', ['blockname' => 'metadata_status', 'parentcontextid' => $coursecontext->id]);
         $context = context_block::instance($blockid);
 
+        $data->enableText = isset($this->config->disable_text) && !($this->config->disable_text === '1');
+
         if (isset($this->config->text) && $this->config->text !== null && $this->config->text !== '' && strlen($this->config->text) > 0) {
             $this->config->text = file_rewrite_pluginfile_urls(
                 $this->config->text,
@@ -89,7 +93,6 @@ class metadata_status implements renderable, templatable {
             $format = $this->config->format;
         }
 
-        $data->hasText = $this->config->text !== null && $this->config->text !== '' && strlen($this->config->text) > 0;
         $data->text = format_text($this->config->text, $format, $filteropt);
 
         return $data;
