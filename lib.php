@@ -213,118 +213,120 @@ function block_metadata_status_get_metadata_status($courseId = null, $context = 
     }
 
     $moduleMetadataFieldIdsTrackedLength = count($moduleMetadataFieldIdsTracked);
+    $metadataStatus = new stdClass();
 
-    $sharedMetadataId = block_metadata_status_get_shared_field_id();
+    if ($moduleMetadataFieldIdsTrackedLength > 0) {
+        $sharedMetadataId = block_metadata_status_get_shared_field_id();
 
-    $moduleIds = array_map(function ($item) {
-        return $item->id;
-    }, $modules);
+        $moduleIds = array_map(function ($item) {
+            return $item->id;
+        }, $modules);
 
-    $sql = 'SELECT instanceid, fieldid, data
+        $sql = 'SELECT instanceid, fieldid, data
             FROM {local_metadata}
             WHERE instanceid = :module' . join(' OR instanceid = :module', $moduleIds) . ';';
 
-    $params = [];
+        $params = [];
 
-    foreach ($moduleIds as $moduleId) {
-        $params['module' . $moduleId] = $moduleId;
-    }
-
-    $sets = $DB->get_recordset_sql($sql, $params);
-
-    $moduleMetadata = [];
-    foreach ($sets as $set) {
-        $moduleMetadata[] = ['instanceid' => $set->instanceid, 'fieldid' => $set->fieldid, 'data' => $set->data];
-    }
-
-    $sets->close();
-
-    $metadataStatus = new stdClass();
-
-    $metadataStatus->modules = [];
-
-    foreach ($modules as $module) {
-        $moduleMetadataFieldsFilledLength = 0;
-        if($debug) {
-            $moduleMetadataFieldsNotFilledLength = 0;
-            $moduleMetadataFieldsFilled = [];
-            $moduleMetadataFieldsNotFilled = [];
+        foreach ($moduleIds as $moduleId) {
+            $params['module' . $moduleId] = $moduleId;
         }
-        foreach ($moduleMetadataFieldIdsTracked as $moduleMetadataFieldIdTracked) {
-            $metadata = array_values(
+
+        $sets = $DB->get_recordset_sql($sql, $params);
+
+        $moduleMetadata = [];
+        foreach ($sets as $set) {
+            $moduleMetadata[] = ['instanceid' => $set->instanceid, 'fieldid' => $set->fieldid, 'data' => $set->data];
+        }
+
+        $sets->close();
+
+        $metadataStatus->modules = [];
+
+        foreach ($modules as $module) {
+            $moduleMetadataFieldsFilledLength = 0;
+            if($debug) {
+                $moduleMetadataFieldsNotFilledLength = 0;
+                $moduleMetadataFieldsFilled = [];
+                $moduleMetadataFieldsNotFilled = [];
+            }
+            foreach ($moduleMetadataFieldIdsTracked as $moduleMetadataFieldIdTracked) {
+                $metadata = array_values(
+                    array_filter(
+                        $moduleMetadata,
+                        function ($item) use ($module, $moduleMetadataFieldIdTracked) {
+                            return strcmp($item['instanceid'], $module->id) === 0 && strcmp($item['fieldid'], $moduleMetadataFieldIdTracked) === 0;
+                        }
+                    )
+                );
+
+                if (count($metadata) === 1) {
+                    $metadata = $metadata[0];
+
+                    $defaultValue = array_values(
+                        array_filter(
+                            $moduleMetadataFields,
+                            function ($item) use ($moduleMetadataFieldIdTracked) {
+                                return $item->id === $moduleMetadataFieldIdTracked;
+                            }
+                        )
+                    )[0]->defaultdata;
+
+                    if ($debug) {
+                        $metadata['defaultdata'] = $defaultValue;
+                    }
+
+                    if ($metadata && $metadata['data'] !== '' && $metadata['data'] !== $defaultValue) {
+                        $moduleMetadataFieldsFilledLength++;
+                        if ($debug) {
+                            array_push($moduleMetadataFieldsFilled, $metadata);
+                        }
+                    } else if ($debug) {
+                        $moduleMetadataFieldsNotFilledLength++;
+                        array_push($moduleMetadataFieldsNotFilled, $metadata);
+                    }
+                }
+            }
+
+            $percentage = intval((100 * $moduleMetadataFieldsFilledLength) / $moduleMetadataFieldIdsTrackedLength);
+            $shared = array_values(
                 array_filter(
                     $moduleMetadata,
-                    function ($item) use ($module, $moduleMetadataFieldIdTracked) {
-                        return strcmp($item['instanceid'], $module->id) === 0 && strcmp($item['fieldid'], $moduleMetadataFieldIdTracked) === 0;
+                    function ($item) use ($module, $sharedMetadataId) {
+                        return strcmp($item['instanceid'], $module->id) === 0 && strcmp($item['fieldid'], $sharedMetadataId) === 0;
                     }
                 )
             );
 
-            if (count($metadata) === 1) {
-                $metadata = $metadata[0];
-
-                $defaultValue = array_values(
-                    array_filter(
-                        $moduleMetadataFields,
-                        function ($item) use ($moduleMetadataFieldIdTracked) {
-                            return $item->id === $moduleMetadataFieldIdTracked;
-                        }
-                    )
-                )[0]->defaultdata;
-
-                if ($debug) {
-                    $metadata['defaultdata'] = $defaultValue;
-                }
-
-                if ($metadata && $metadata['data'] !== '' && $metadata['data'] !== $defaultValue) {
-                    $moduleMetadataFieldsFilledLength++;
-                    if ($debug) {
-                        array_push($moduleMetadataFieldsFilled, $metadata);
-                    }
-                } else if ($debug) {
-                    $moduleMetadataFieldsNotFilledLength++;
-                    array_push($moduleMetadataFieldsNotFilled, $metadata);
-                }
+            if (count($shared) === 1) {
+                $shared = $shared[0]['data'] == '1';
+            } else {
+                $shared = false;
             }
-        }
-        $percentage = intval((100 * $moduleMetadataFieldsFilledLength) / $moduleMetadataFieldIdsTrackedLength);
-        $shared = array_values(
-            array_filter(
-                $moduleMetadata,
-                function ($item) use ($module, $sharedMetadataId) {
-                    return strcmp($item['instanceid'], $module->id) === 0 && strcmp($item['fieldid'], $sharedMetadataId) === 0;
-                }
-            )
-        );
 
-        if (count($shared) === 1) {
-            $shared = $shared[0]['data'] == '1';
-        } else {
-            $shared = false;
-        }
+            $moduleMetadataItem = new stdClass();
+            $moduleMetadataItem->id = $module->id;
+            $moduleMetadataItem->status = (object)['percentage' => $percentage, 'shared' => $shared];
 
-        $moduleMetadataItem = new stdClass();
-        $moduleMetadataItem->id = $module->id;
-        $moduleMetadataItem->status = (object)['percentage' => $percentage, 'shared' => $shared];
+            if ($debug) {
+                $moduleMetadataItem->fieldsFilled = $moduleMetadataFieldsFilled;
+                $moduleMetadataItem->fieldsFilledLength = $moduleMetadataFieldsFilledLength;
+                $moduleMetadataItem->fieldsNotFilled = $moduleMetadataFieldsNotFilled;
+                $moduleMetadataItem->fieldsNotFilledLength = $moduleMetadataFieldsNotFilledLength;
+                $moduleMetadataItem->fieldsTrackedLength = $moduleMetadataFieldIdsTrackedLength;
+            }
 
-        if ($debug) {
-            $moduleMetadataItem->fieldsFilled = $moduleMetadataFieldsFilled;
-            $moduleMetadataItem->fieldsFilledLength = $moduleMetadataFieldsFilledLength;
-            $moduleMetadataItem->fieldsNotFilled = $moduleMetadataFieldsNotFilled;
-            $moduleMetadataItem->fieldsNotFilledLength = $moduleMetadataFieldsNotFilledLength;
-            $moduleMetadataItem->fieldsTrackedLength = $moduleMetadataFieldIdsTrackedLength;
+            $metadataStatus->modules[] = $moduleMetadataItem;
         }
 
-        $metadataStatus->modules[] = $moduleMetadataItem;
+        $metadataStatus->options = new stdClass();
+
+        $metadataStatus->options->enablePercentageLabel = get_config('block_metadata_status', 'enable_percentage_label') === '1';
+        $metadataStatus->options->progressBarBackgroundColor = get_config('block_metadata_status', 'progress_bar_background_color');
+        $metadataStatus->options->progressBarThreshold = get_config('block_metadata_status', 'progress_bar_threshold');
+        $metadataStatus->options->progressBarColorBeforeThreshold = get_config('block_metadata_status', 'progress_bar_color_before_threshold');
+        $metadataStatus->options->progressBarColorAfterThreshold = get_config('block_metadata_status', 'progress_bar_color_after_threshold');
     }
-
-    $metadataStatus->options = new stdClass();
-
-    $metadataStatus->options->enablePercentageLabel = get_config('block_metadata_status', 'enable_percentage_label') === '1';
-    $metadataStatus->options->progressBarBackgroundColor = get_config('block_metadata_status', 'progress_bar_background_color');
-    $metadataStatus->options->progressBarThreshold = get_config('block_metadata_status', 'progress_bar_threshold');
-    $metadataStatus->options->progressBarColorBeforeThreshold = get_config('block_metadata_status', 'progress_bar_color_before_threshold');
-    $metadataStatus->options->progressBarColorAfterThreshold = get_config('block_metadata_status', 'progress_bar_color_after_threshold');
 
     return $metadataStatus;
 }
