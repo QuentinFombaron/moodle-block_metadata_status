@@ -13,6 +13,7 @@ $string['metadata_type_datetime'] = 'Date/Heure';
 $string['metadata_type_menu'] = 'Menu déroulant';
 $string['metadata_type_text'] = 'Saisie de texte';
 $string['metadata_type_textarea'] = 'Zone de texte';
+$string['metadata_type_textarealight'] = 'Zone de texte simplifiée';
 
 $string['config_header_block_configuration'] = 'Configuration du bloc Suivi des Métadonnées';
 $string['config_header_block_configuration_desc'] = '';

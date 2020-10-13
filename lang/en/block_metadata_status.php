@@ -11,6 +11,7 @@ $string['metadata_type_datetime'] = 'Date/Time';
 $string['metadata_type_menu'] = 'Dropdown menu';
 $string['metadata_type_text'] = 'Text input';
 $string['metadata_type_textarea'] = 'Text area';
+$string['metadata_type_textarealight'] = 'Light text area';
 
 $string['config_header_block_configuration'] = 'Metadata Status block configuration';
 $string['config_header_block_configuration_desc'] = '';
