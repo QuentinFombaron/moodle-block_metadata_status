@@ -52,11 +52,12 @@ if ($ADMIN->fulltree) {
         $moduleMetadataFields = block_metadata_status_get_module_metadata_fields();
 
         foreach ($moduleMetadataFields as $metadataField) {
+            $locked = $metadataField->locked === '1';
             $settings->add(new admin_setting_configcheckbox(
                 'block_metadata_status/enable_metadata_' . $metadataField->id . '_tracking',
-                '<b>' . $metadataField->name . '</b><code> - ' . get_string('metadata_type_' . $metadataField->datatype, 'block_metadata_status') . '</code>',
+                ($locked ? '<div class="icon fa fa-lock"></div>' : '').'<b>' . $metadataField->name . '</b> <code> - ' . get_string('metadata_type_' . $metadataField->datatype, 'block_metadata_status') . '</code>',
                 '',
-                DEFAULT_METADATA_STATUS_ENABLE_METADATA_TRACKING
+                $locked ? 0 : 1
             ));
         }
 

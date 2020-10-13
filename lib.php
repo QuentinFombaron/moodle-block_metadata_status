@@ -27,7 +27,7 @@ const DEFAULT_METADATA_STATUS_PROGRESS_BAR_THRESHOLD = 7;
 function block_metadata_status_get_module_metadata_fields() {
     global $DB;
 
-    $sql = 'SELECT id, name, shortname, datatype
+    $sql = 'SELECT id, name, shortname, datatype, locked, defaultdata
             FROM {local_metadata_field}
             WHERE contextlevel = :contextlevel AND datatype != :datatype';
 
@@ -170,6 +170,7 @@ function block_metadata_status_get_tracked_metadata_length() {
  *
  * @throws ddl_exception
  * @throws dml_exception
+ * @throws Exception
  */
 function block_metadata_status_get_metadata_status($courseId = null, $context = null, $debug = false)
 {
@@ -189,12 +190,7 @@ function block_metadata_status_get_metadata_status($courseId = null, $context = 
         ['courseid' => $courseId, 'moduleid' => 12]
     );
 
-    $sql = 'SELECT id, shortname, datatype, defaultdata
-            FROM {local_metadata_field}
-            WHERE contextlevel = :contextlevel AND datatype != :datatype';
-    $params = ['contextlevel' => 70, 'datatype' => 'checkbox'];
-
-    $moduleMetadataFields = $DB->get_records_sql($sql, $params);
+    $moduleMetadataFields = block_metadata_status_get_module_metadata_fields();
 
     if ($DB->get_manager()->table_exists('local_sharedspaceh_teams') && !is_null($context)) {
         $teams = $DB->get_records_menu('local_sharedspaceh_teams', null, 'teamname ASC', 'id, capabilityid');
@@ -207,7 +203,10 @@ function block_metadata_status_get_metadata_status($courseId = null, $context = 
 
     $moduleMetadataFieldIdsTracked = [];
     foreach ($moduleMetadataFields as $moduleMetadataField) {
-        if (get_config('block_metadata_status', 'enable_metadata_' . $moduleMetadataField->id . '_tracking')) {
+        if (
+            get_config('block_metadata_status', 'enable_metadata_' . $moduleMetadataField->id . '_tracking')
+            && $moduleMetadataField->locked === '0'
+        ) {
             array_push($moduleMetadataFieldIdsTracked, $moduleMetadataField->id);
         }
     }
