@@ -2,7 +2,7 @@
 
 # Moodle plugin « Metadata Status »
 
-*Quentin Fombaron - April 17<SUP>th</SUP> 2020*
+*Quentin Fombaron - October 14<SUP>th</SUP> 2020*
 
 *Centre des Nouvelles Pédagogies (CNP\*), Univ. Grenoble Alpes - University of innovation*
 
